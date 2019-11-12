@@ -27,28 +27,13 @@ struct Spaceship : public Behaviour
 
 	void onInput(const InputController &input) override
 	{
-	
 		if (input.horizontalAxis != 0.0f || input.verticalAxis != 0.0f)
 		{
 			const float advanceSpeed = 200.0f;
-			//gameObject->angle += input.horizontalAxis * rotateSpeed * Time.deltaTime;
 			gameObject->position += vec2{ 1,0 } * input.horizontalAxis * advanceSpeed * Time.deltaTime;
 			gameObject->position += vec2{ 0,-1 } *input.verticalAxis * advanceSpeed * Time.deltaTime;
 			NetworkUpdate(gameObject);
 		}
-
-		/*if (input.actionDown == ButtonState::Pressed)
-		{
-			const float advanceSpeed = 200.0f;
-			gameObject->position += vec2FromDegrees(gameObject->angle) * advanceSpeed * Time.deltaTime;
-			NetworkUpdate(gameObject);
-		}
-
-		if (input.actionLeft == ButtonState::Press)
-		{
-			GameObject * laser = App->modNetServer->spawnBullet(gameObject);
-			laser->tag = gameObject->tag;
-		}*/
 	}
 
 	void onMouse(const MouseController& mouse) override
@@ -56,7 +41,6 @@ struct Spaceship : public Behaviour
 		vec2 mousePos = vec2{ (float)(mouse.x - Window.width / 2), (float)(mouse.y - Window.height / 2)};
 
 		gameObject->angle = degreesFromRadians(atan2(mousePos.y, mousePos.x)) +90;
-		LOG("Angle: %f", gameObject->angle);
 		NetworkUpdate(gameObject);
 
 		if (mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
