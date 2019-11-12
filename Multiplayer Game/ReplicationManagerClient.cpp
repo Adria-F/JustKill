@@ -1,0 +1,68 @@
+#include "Networks.h"
+#include "ReplicationManagerClient.h"
+
+void ReplicationManagerClient::read(const InputMemoryStream & packet)
+{
+	while (packet.RemainingByteCount() > 0)
+	{
+		uint32 networkId;
+		packet >> networkId;
+		ReplicationAction action;
+		packet >> action;
+		if (action == ReplicationAction::Create)
+		{
+			if (App->modLinkingContext->getNetworkGameObject(networkId) == nullptr)
+			{
+				GameObject* go = Instantiate();
+				App->modLinkingContext->registerNetworkGameObjectWithNetworkId(go, networkId);
+
+				packet >> go->position.x;
+				packet >> go->position.y;
+				packet >> go->size.x;
+				packet >> go->size.y;
+				packet >> go->angle;
+				
+				int texture;
+				packet >> texture;
+				switch (texture)
+				{
+				case 1:
+					go->texture = App->modResources->spacecraft1;
+					break;
+				case 2:
+					go->texture = App->modResources->spacecraft2;
+					break;
+				case 3:
+					go->texture = App->modResources->spacecraft3;
+					break;
+				case 4:
+					go->texture = App->modResources->laser;
+					break;
+				case 5:
+					go->texture = App->modResources->asteroid1;
+					break;
+				case 6:
+					go->texture = App->modResources->asteroid2;
+					break;
+				}
+			}
+			else
+			{
+				action = ReplicationAction::Update;
+			}
+		}
+		if (action == ReplicationAction::Update)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
+			packet >> go->position.x;
+			packet >> go->position.y;
+			packet >> go->angle;
+		}
+		else if (action == ReplicationAction::Destroy)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
+			App->modLinkingContext->unregisterNetworkGameObject(go);
+			Destroy(go);
+		}
+	}
+}
