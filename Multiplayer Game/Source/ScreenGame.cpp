@@ -20,16 +20,16 @@ void ScreenGame::enable()
 	}
 
 	spaceTopLeft = Instantiate();
-	spaceTopLeft->texture = App->modResources->space;
+	spaceTopLeft->texture = App->modResources->parking_lot;
 	spaceTopLeft->order = -1;
 	spaceTopRight = Instantiate();
-	spaceTopRight->texture = App->modResources->space;
+	spaceTopRight->texture = App->modResources->parking_lot;
 	spaceTopRight->order = -1;
 	spaceBottomLeft = Instantiate();
-	spaceBottomLeft->texture = App->modResources->space;
+	spaceBottomLeft->texture = App->modResources->parking_lot;
 	spaceBottomLeft->order = -1;
 	spaceBottomRight = Instantiate();
-	spaceBottomRight->texture = App->modResources->space;
+	spaceBottomRight->texture = App->modResources->parking_lot;
 	spaceBottomRight->order = -1;
 }
 
