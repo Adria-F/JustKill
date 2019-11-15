@@ -12,6 +12,7 @@ struct GameObject
 	vec4 color = vec4{ 1.0f, 1.0f, 1.0f, 1.0f }; // NOTE(jesus): The texture will tinted with this color
 	Texture * texture = nullptr;
 	int  order = 0;          // NOTE(jesus): determines the drawing order
+	Animation* animation = nullptr;
 
 	// Collider component
 	Collider *collider = nullptr;

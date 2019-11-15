@@ -3,6 +3,7 @@
 #define USE_TASK_MANAGER
 
 struct Texture;
+struct Animation;
 
 class ModuleResources : public Module
 {
@@ -16,6 +17,8 @@ public:
 	Texture *spacecraft2 = nullptr;
 	Texture *spacecraft3 = nullptr;
 	Texture *laser = nullptr;
+
+	Animation* spacecraft = nullptr;
 
 	bool finishedLoading = false;
 private:

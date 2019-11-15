@@ -40,6 +40,12 @@ bool ModuleResources::init()
 	loadTextureAsync("laser.png",            &laser);
 #endif
 
+	spacecraft = App->modAnimations->createAnimation("spacecraft");
+	spacecraft->spriteDuration = 0.5f;
+	spacecraft->pushTexture(spacecraft1);
+	spacecraft->pushTexture(spacecraft2);
+	spacecraft->pushTexture(spacecraft3);
+
 	return true;
 }
 
