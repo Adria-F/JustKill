@@ -208,6 +208,8 @@ void ModuleNetworkingClient::onUpdate()
 			packet << Mouse.buttons[2];
 			packet << Mouse.buttons[3];
 			packet << Mouse.buttons[4];
+			packet << Window.width;
+			packet << Window.height;
 
 			sendPacket(packet, serverAddress);
 			//LOG("X:%d | Y:%d", Mouse.x-Window.width/2, Mouse.y-Window.height/2);

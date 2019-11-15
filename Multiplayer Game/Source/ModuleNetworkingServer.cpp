@@ -190,6 +190,8 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				packet >> proxy->mouse.buttons[2];
 				packet >> proxy->mouse.buttons[3];
 				packet >> proxy->mouse.buttons[4];
+				packet >> proxy->mouse.screenReferenceWidth;
+				packet >> proxy->mouse.screenReferenceHeight;
 
 				proxy->gameObject->behaviour->onMouse(proxy->mouse);
 			}
