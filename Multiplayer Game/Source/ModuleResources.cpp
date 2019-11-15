@@ -32,6 +32,7 @@ bool ModuleResources::init()
 	completionRatio = 1.0f;
 #else
 	loadTextureAsync("space_background.jpg", &space);
+	loadTextureAsync("parking_lot.png",		 &parking_lot);
 	loadTextureAsync("asteroid1.png",        &asteroid1);
 	loadTextureAsync("asteroid2.png",        &asteroid2);
 	loadTextureAsync("spacecraft1.png",      &spacecraft1);
