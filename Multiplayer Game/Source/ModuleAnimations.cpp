@@ -1,5 +1,4 @@
-#include "Networks.h"
-
+#include "ModuleAnimations.h"
 
 ModuleAnimations::ModuleAnimations()
 {
@@ -8,34 +7,6 @@ ModuleAnimations::ModuleAnimations()
 
 ModuleAnimations::~ModuleAnimations()
 {
-}
-
-bool ModuleAnimations::init()
-{
-	return true;
-}
-
-bool ModuleAnimations::postUpdate()
-{
-	for (auto &animation : animations)
-	{
-		if (animation.isUsed())
-		{
-			animation.Update();
-		}
-	}
-
-	return true;
-}
-
-bool ModuleAnimations::cleanUp()
-{
-	for (auto &animation : animations)
-	{
-		animation.clean();
-	}
-
-	return true;
 }
 
 Animation* ModuleAnimations::createAnimation(const char* tag)
@@ -50,7 +21,7 @@ Animation* ModuleAnimations::createAnimation(const char* tag)
 		}
 	}
 
-	ELOG("All available animations used");
+	//ELOG("All available animations used");
 
 	return nullptr;
 }
@@ -75,7 +46,7 @@ Animation* ModuleAnimations::useAnimation(const char * tag)
 		}
 	}
 
-	WLOG("Animation tag not found");
+	//WLOG("Animation tag not found");
 	return nullptr;
 }
 
@@ -88,13 +59,15 @@ void ModuleAnimations::removeAnimation(Animation* animation)
 void Animation::Start()
 {
 	currentSprite = 0;
-	lastSpriteTime = Time.time;
+	lastSpriteTime = 0;
 }
 
 void Animation::Update()
 {
-	if (Time.time - lastSpriteTime >= spriteDuration)
+	time += 0.016f; //Fake adding deltaTime each frame
+	if (time - lastSpriteTime >= spriteDuration)
 	{
+		lastSpriteTime = time;
 		currentSprite++;
 		if (currentSprite == sprites.size())
 		{
@@ -103,14 +76,14 @@ void Animation::Update()
 	}
 }
 
-void Animation::pushTexture(Texture * texture)
+void Animation::pushTexture(Texture** texture)
 {
 	sprites.push_back(texture);
 }
 
 bool Animation::isFinished() const
 {
-	return currentSprite == sprites.size()-1 && Time.time-lastSpriteTime >= spriteDuration;
+	return currentSprite == sprites.size()-1 && time-lastSpriteTime >= spriteDuration;
 }
 
 bool Animation::isUsed() const
@@ -129,4 +102,9 @@ void Animation::clean()
 	sprites.clear();
 	currentSprite = 0;
 	used = false;
+}
+
+Texture* Animation::getCurrentSprite() const
+{
+	return *sprites[currentSprite];
 }

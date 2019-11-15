@@ -21,29 +21,40 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 				packet >> go->size.x;
 				packet >> go->size.y;
 				packet >> go->angle;
-				
-				int texture;
-				packet >> texture;
-				switch (texture)
+				bool haveAnimation = false;
+				packet >> haveAnimation;
+
+				if (haveAnimation)
 				{
-				case 1:
-					go->texture = App->modResources->spacecraft1;
-					break;
-				case 2:
-					go->texture = App->modResources->spacecraft2;
-					break;
-				case 3:
-					go->texture = App->modResources->spacecraft3;
-					break;
-				case 4:
-					go->texture = App->modResources->laser;
-					break;
-				case 5:
-					go->texture = App->modResources->asteroid1;
-					break;
-				case 6:
-					go->texture = App->modResources->asteroid2;
-					break;
+					std::string tag;
+					packet >> tag;
+					go->animation = App->modAnimations->useAnimation(tag.c_str());
+				}
+				else
+				{
+					int texture;
+					packet >> texture;
+					switch (texture)
+					{
+					case 1:
+						go->texture = App->modResources->spacecraft1;
+						break;
+					case 2:
+						go->texture = App->modResources->spacecraft2;
+						break;
+					case 3:
+						go->texture = App->modResources->spacecraft3;
+						break;
+					case 4:
+						go->texture = App->modResources->laser;
+						break;
+					case 5:
+						go->texture = App->modResources->asteroid1;
+						break;
+					case 6:
+						go->texture = App->modResources->asteroid2;
+						break;
+					}
 				}
 			}
 			else

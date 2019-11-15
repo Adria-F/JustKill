@@ -2,16 +2,19 @@
 #include <vector>
 #include <list>
 
+struct Texture;
+
 struct Animation
 {
 public:
-	const char* tag = "";
+	std::string tag;
 	float spriteDuration = 0.5f;
-	std::vector<Texture*> sprites;
+	std::vector<Texture**> sprites;
 
 private:
 
 	float lastSpriteTime = 0.0f;
+	float time = 0.0f; //Ugly
 
 	int currentSprite = 0;
 	bool used = false;
@@ -24,22 +27,19 @@ public:
 
 	void Start();
 	void Update();
-	void pushTexture(Texture* texture);
+	void pushTexture(Texture** texture);
 	bool isFinished() const;
 	bool isUsed() const;
 	void setUsed(bool used);
 	void clean();
+	Texture* getCurrentSprite() const;
 };
 
-class ModuleAnimations : public Module
+class ModuleAnimations
 {
 public:
 	ModuleAnimations();
 	~ModuleAnimations();
-
-	bool init() override;
-	bool postUpdate() override;
-	bool cleanUp() override;
 
 	Animation* createAnimation(const char* tag);
 	Animation* useAnimation(const char* tag);
@@ -47,7 +47,7 @@ public:
 
 private:
 
-	Animation animations[MAX_ANIMATIONS];
+	Animation animations[256];
 	std::list<Animation*> objectsAnimations;
 };
 

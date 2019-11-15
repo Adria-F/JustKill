@@ -50,6 +50,8 @@ bool ModuleGameObject::update()
 		{
 			if (gameObject.behaviour != nullptr)
 				gameObject.behaviour->update();
+			if (gameObject.animation)
+				gameObject.animation->Update();
 		}
 	}
 

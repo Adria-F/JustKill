@@ -42,9 +42,9 @@ bool ModuleResources::init()
 
 	spacecraft = App->modAnimations->createAnimation("spacecraft");
 	spacecraft->spriteDuration = 0.5f;
-	spacecraft->pushTexture(spacecraft1);
-	spacecraft->pushTexture(spacecraft2);
-	spacecraft->pushTexture(spacecraft3);
+	spacecraft->pushTexture(&spacecraft1);
+	spacecraft->pushTexture(&spacecraft2);
+	spacecraft->pushTexture(&spacecraft3);
 
 	return true;
 }

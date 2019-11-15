@@ -17,7 +17,6 @@
 #include "ModuleScreen.cpp"
 #include "ModuleTaskManager.cpp"
 #include "ModuleTextures.cpp"
-#include "ModuleAnimations.cpp"
 #include "ModuleUI.cpp"
 #include "Networks.cpp"
 #include "ReplicationManagerClient.cpp"

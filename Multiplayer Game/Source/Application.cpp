@@ -1,5 +1,6 @@
 #include "Networks.h"
 #include "Application.h"
+#include "ModuleAnimations.h"
 
 #define ADD_MODULE(ModuleClass, module) \
 	module = new ModuleClass(); \
@@ -20,7 +21,7 @@ Application::Application()
 	ADD_MODULE          (ModuleLinkingContext,   modLinkingContext);
 	ADD_MODULE          (ModuleTaskManager,      modTaskManager);
 	ADD_MODULE          (ModuleTextures,         modTextures);
-	ADD_MODULE			(ModuleAnimations,       modAnimations);
+	modAnimations = new ModuleAnimations();
 	ADD_MODULE          (ModuleResources,        modResources);
 	ADD_MODULE          (ModuleGameObject,       modGameObject);
 	ADD_MODULE          (ModuleCollision,        modCollision);

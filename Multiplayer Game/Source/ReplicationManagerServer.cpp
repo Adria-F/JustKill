@@ -36,22 +36,30 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 			packet << go->size.x;
 			packet << go->size.y;
 			packet << go->angle;
+			packet << (go->animation != nullptr); //Boolean to know if there is animation
 
-			int texture = 0;
-			if (go->texture == App->modResources->spacecraft1)
-				texture = 1;
-			else if (go->texture == App->modResources->spacecraft2)
-				texture = 2;
-			else if (go->texture == App->modResources->spacecraft3)
-				texture = 3;
-			else if (go->texture == App->modResources->laser)
-				texture = 4;
-			else if (go->texture == App->modResources->asteroid1)
-				texture = 5;
-			else if (go->texture == App->modResources->asteroid2)
-				texture = 6;
+			if (go->animation)
+			{
+				packet << go->animation->tag;
+			}
+			else
+			{
+				int texture = 0;
+				if (go->texture == App->modResources->spacecraft1)
+					texture = 1;
+				else if (go->texture == App->modResources->spacecraft2)
+					texture = 2;
+				else if (go->texture == App->modResources->spacecraft3)
+					texture = 3;
+				else if (go->texture == App->modResources->laser)
+					texture = 4;
+				else if (go->texture == App->modResources->asteroid1)
+					texture = 5;
+				else if (go->texture == App->modResources->asteroid2)
+					texture = 6;
 
-			packet << texture;
+				packet << texture;
+			}
 		}
 		if ((*it_c).second == ReplicationAction::Update)
 		{
