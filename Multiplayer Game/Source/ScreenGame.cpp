@@ -11,6 +11,7 @@ void ScreenGame::enable()
 	{
 		App->modNetServer->setListenPort(serverPort);
 		App->modNetServer->setEnabled(true);
+
 	}
 	else
 	{
@@ -18,7 +19,8 @@ void ScreenGame::enable()
 		App->modNetClient->setPlayerInfo(playerName, spaceshipType);
 		App->modNetClient->setEnabled(true);
 	}
-
+	App->modResources->parking_lot->size.x *= 4.0f;
+	App->modResources->parking_lot->size.y *= 4.0f;
 	spaceTopLeft = Instantiate();
 	spaceTopLeft->texture = App->modResources->parking_lot;
 	spaceTopLeft->order = -1;
