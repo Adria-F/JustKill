@@ -77,7 +77,7 @@ void ModuleNetworkingClient::onGui()
 
 			ImGui::Separator();
 
-			ImGui::Text("Spaceship info:");
+			ImGui::Text("Player info:");
 			ImGui::Text(" - Type: %u", spaceshipType);
 			ImGui::Text(" - Network id: %u", networkId);
 

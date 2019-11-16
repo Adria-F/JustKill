@@ -15,7 +15,7 @@ struct Behaviour
 	virtual void onCollisionTriggered(Collider &c1, Collider &c2) { }
 };
 
-struct Spaceship : public Behaviour
+struct Player : public Behaviour
 {
 	float shotingDelay = 0.5f;
 	float lastShotTime = 0.0f;
@@ -54,7 +54,7 @@ struct Spaceship : public Behaviour
 
 	void onCollisionTriggered(Collider &c1, Collider &c2) override
 	{
-		if (c2.type == ColliderType::Laser && c2.gameObject->tag != gameObject->tag)
+		if (c2.type == ColliderType::Bullet && c2.gameObject->tag != gameObject->tag)
 		{
 			NetworkDestroy(c2.gameObject); // Destroy the laser
 
@@ -81,5 +81,31 @@ struct Laser : public Behaviour
 
 		const float lifetimeSeconds = 2.0f;
 		if (secondsSinceCreation > lifetimeSeconds) NetworkDestroy(gameObject);
+	}
+};
+
+struct Zombie : public Behaviour
+{
+	void update() override
+	{
+
+	}
+
+	void onCollisionTriggered(Collider &c1, Collider &c2) override
+	{
+		if (c2.type == ColliderType::Bullet && c2.gameObject->tag != gameObject->tag)
+		{
+			NetworkDestroy(c2.gameObject); // Destroy the bullet
+			NetworkDestroy(c1.gameObject); //Destroy the zombie
+			App->modNetServer->spawnExplosion(c1.gameObject->position);
+		}
+	}
+};
+
+struct Explosion : public Behaviour
+{
+	void update() override
+	{
+
 	}
 };

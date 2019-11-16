@@ -26,6 +26,7 @@
 #include <condition_variable>
 #include <vector>
 #include <map>
+#include <list>
 #include <deque>
 #include <algorithm>
 
