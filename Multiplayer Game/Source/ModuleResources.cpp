@@ -19,27 +19,32 @@ public:
 
 bool ModuleResources::init()
 {
-	background = App->modTextures->loadTexture("Textures/Environment/background.jpg");
+	background = App->modTextures->loadTexture("background.jpg");
 
 #if !defined(USE_TASK_MANAGER)
-
+	space = App->modTextures->loadTexture("space_background.jpg");
+	asteroid1 = App->modTextures->loadTexture("asteroid1.png");
+	asteroid2 = App->modTextures->loadTexture("asteroid2.png");
+	spacecraft1 = App->modTextures->loadTexture("spacecraft1.png");
+	spacecraft2 = App->modTextures->loadTexture("spacecraft2.png");
+	spacecraft3 = App->modTextures->loadTexture("spacecraft3.png");
 	loadingFinished = true;
 	completionRatio = 1.0f;
 #else
-	loadTextureAsync("Textures/Environment/parking_lot.png",	&parking_lot);
-	loadTextureAsync("Textures/Entities/Player/robot.png",      &robot);
-	loadTextureAsync("Textures/Entities/Zombie/zombie.png",     &zombie);
-	loadTextureAsync("Textures/VFX/blood.png",					&blood);
-	loadTextureAsync("Textures/VFX/bullet.png",					&bullet);
-	loadTextureAsync("Textures/VFX/shot.png",					&shot);
-	loadTextureAsync("Textures/VFX/Zombie_Death/sprite1.png",	&explosion1);
-	loadTextureAsync("Textures/VFX/Zombie_Death/sprite2.png",	&explosion2);
-	loadTextureAsync("Textures/VFX/Zombie_Death/sprite3.png",	&explosion3);
-	loadTextureAsync("Textures/VFX/Zombie_Death/sprite4.png",	&explosion4);
-	loadTextureAsync("Textures/VFX/Zombie_Death/sprite5.png",	&explosion5);
-	loadTextureAsync("Textures/VFX/Zombie_Death/sprite6.png",	&explosion6);
-	loadTextureAsync("Textures/VFX/Zombie_Death/sprite7.png",	&explosion7);
+	loadTextureAsync("space_background.jpg", &space);
+	loadTextureAsync("asteroid1.png",        &asteroid1);
+	loadTextureAsync("asteroid2.png",        &asteroid2);
+	loadTextureAsync("spacecraft1.png",      &spacecraft1);
+	loadTextureAsync("spacecraft2.png",      &spacecraft2);
+	loadTextureAsync("spacecraft3.png",      &spacecraft3);
+	loadTextureAsync("laser.png",            &laser);
 #endif
+
+	spacecraft = App->modAnimations->createAnimation("spacecraft");
+	spacecraft->spriteDuration = 0.5f;
+	spacecraft->pushTexture(&spacecraft1);
+	spacecraft->pushTexture(&spacecraft2);
+	spacecraft->pushTexture(&spacecraft3);
 
 	return true;
 }

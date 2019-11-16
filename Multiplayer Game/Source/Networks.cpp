@@ -10,8 +10,6 @@ MouseController Mouse = {};
 
 RandomNumberGenerator Random;
 
-std::hash<std::string> idGenerator;
-
 static LogEntry logEntry[MAX_LOG_ENTRIES];
 static uint32 logEntryFront = 0;
 static uint32 logEntryBack = 0;

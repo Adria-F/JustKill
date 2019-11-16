@@ -81,11 +81,6 @@ public:
 
 	// NOTE(jesus): Here go spawn methods for each type of network objects
 
-	//Zombie related objects
-	GameObject* spawnZombie(vec2 position);
-	GameObject* spawnExplosion(vec2 position);
-	GameObject* spawnBlood(vec2 position, float angle);
-
 
 
 private:

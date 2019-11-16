@@ -50,6 +50,8 @@ bool ModuleGameObject::update()
 		{
 			if (gameObject.behaviour != nullptr)
 				gameObject.behaviour->update();
+			if (gameObject.animation)
+				gameObject.animation->Update();
 		}
 	}
 
@@ -90,6 +92,11 @@ void ModuleGameObject::Destroy(GameObject * gameObject)
 {
 	ASSERT(gameObject->networkId == 0); // NOTE(jesus): If it has a network identity, it must be destroyed by the Networking module first
 	
+	if (gameObject->animation)
+	{
+		App->modAnimations->removeAnimation(gameObject->animation);
+	}
+
 	gameObject->state = GameObject::DESTROYING;
 }
 

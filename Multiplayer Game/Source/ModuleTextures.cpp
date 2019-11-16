@@ -1,5 +1,4 @@
 #include "Networks.h"
-#include "ModuleTextures.h"
 
 
 extern ID3D11Device *g_pd3dDevice;
@@ -42,7 +41,6 @@ Texture* ModuleTextures::loadTexture(const char *filename)
 
 		// If not found, add the texture into the first empty slot
 		texture.filename = filename;
-		texture.UID = idGenerator(filename);
 		texture.size = vec2{ (float)width, (float)height };
 		texture.used = true;
 	}
@@ -80,17 +78,6 @@ void ModuleTextures::freeTexture(Texture* tex)
 			}
 		}
 	}
-}
-
-Texture* ModuleTextures::getTexturebyUID(uint32 uid)
-{
-	for (auto &texture : _textures)
-	{
-		if (texture.UID == uid)
-			return &texture;
-	}
-
-	return nullptr;
 }
 
 ID3D11ShaderResourceView* ModuleTextures::loadD3DTextureFromFile(const char * filename, int * width, int * height)

@@ -190,8 +190,6 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				packet >> proxy->mouse.buttons[2];
 				packet >> proxy->mouse.buttons[3];
 				packet >> proxy->mouse.buttons[4];
-				packet >> proxy->mouse.screenReferenceWidth;
-				packet >> proxy->mouse.screenReferenceHeight;
 
 				proxy->gameObject->behaviour->onMouse(proxy->mouse);
 			}
@@ -358,14 +356,24 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	clientProxy.gameObject->size = { 100, 100 };
 	clientProxy.gameObject->angle = 45.0f;
 
-	clientProxy.gameObject->texture = App->modResources->robot;
+	if (spaceshipType == 0) {
+		clientProxy.gameObject->texture = App->modResources->spacecraft1;
+	}
+	else if (spaceshipType == 1) {
+		clientProxy.gameObject->texture = App->modResources->spacecraft2;
+	}
+	else {
+		clientProxy.gameObject->texture = App->modResources->spacecraft3;
+	}
+
+	clientProxy.gameObject->animation = App->modAnimations->useAnimation("spacecraft");
 
 	// Create collider
 	clientProxy.gameObject->collider = App->modCollision->addCollider(ColliderType::Player, clientProxy.gameObject);
 	clientProxy.gameObject->collider->isTrigger = true;
 
 	// Create behaviour
-	clientProxy.gameObject->behaviour = new Player;
+	clientProxy.gameObject->behaviour = new Spaceship;
 	clientProxy.gameObject->behaviour->gameObject = clientProxy.gameObject;
 
 	// Assign a new network identity to the object
@@ -381,8 +389,6 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 		}
 	}
 
-	spawnZombie({ 0,0 });
-
 	return clientProxy.gameObject;
 }
 
@@ -393,8 +399,8 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent)
 	gameObject->size = { 20, 60 };
 	gameObject->angle = parent->angle;
 	gameObject->position = parent->position;
-	gameObject->texture = App->modResources->bullet;
-	gameObject->collider = App->modCollision->addCollider(ColliderType::Bullet, gameObject);
+	gameObject->texture = App->modResources->laser;
+	gameObject->collider = App->modCollision->addCollider(ColliderType::Laser, gameObject);
 
 	// Create behaviour
 	gameObject->behaviour = new Laser;
@@ -414,63 +420,6 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent)
 	}
 
 	return gameObject;
-}
-
-GameObject * ModuleNetworkingServer::spawnZombie(vec2 position)
-{
-	GameObject* zombie = Instantiate();
-	zombie->size = { 100, 100 };
-	zombie->position = position;
-	zombie->texture = App->modResources->zombie;
-	zombie->collider = App->modCollision->addCollider(ColliderType::Zombie, zombie);
-	zombie->collider->isTrigger = true;
-
-	zombie->behaviour = new Zombie();
-	zombie->behaviour->gameObject = zombie;
-
-	App->modLinkingContext->registerNetworkGameObject(zombie);
-
-	// Notify all client proxies' replication manager to create the object remotely
-	for (int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if (clientProxies[i].connected)
-		{
-			// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
-			clientProxies[i].replicationManager.create(zombie->networkId);
-		}
-	}
-
-	return zombie;
-}
-
-GameObject * ModuleNetworkingServer::spawnExplosion(vec2 position)
-{
-	GameObject* object = Instantiate();
-	object->size = { 100, 100 };
-	object->position = position;
-	object->texture = App->modResources->explosion3;
-
-	object->behaviour = new Explosion();
-	object->behaviour->gameObject = object;
-
-	App->modLinkingContext->registerNetworkGameObject(object);
-
-	// Notify all client proxies' replication manager to create the object remotely
-	for (int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if (clientProxies[i].connected)
-		{
-			// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
-			clientProxies[i].replicationManager.create(object->networkId);
-		}
-	}
-
-	return object;
-}
-
-GameObject * ModuleNetworkingServer::spawnBlood(vec2 position, float angle)
-{
-	return nullptr;
 }
 
 
