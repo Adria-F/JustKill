@@ -22,9 +22,21 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 				packet >> go->size.y;
 				packet >> go->angle;
 				
-				uint32 UID;
-				packet >> UID;
-				go->texture = App->modTextures->getTexturebyUID(UID);
+				bool haveAnimation = false;
+				packet >> haveAnimation;
+
+				if (haveAnimation)
+				{
+					std::string tag;
+					packet >> tag;
+					go->animation = App->modAnimations->useAnimation(tag.c_str());
+				}
+				else
+				{
+					uint32 UID;
+					packet >> UID;
+					go->texture = App->modTextures->getTexturebyUID(UID);
+				}
 			}
 			else
 			{

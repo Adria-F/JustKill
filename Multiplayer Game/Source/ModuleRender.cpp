@@ -285,7 +285,7 @@ bool ModuleRender::init()
 		return false;
 	}
 
-	mustRenderColliders = true;
+	//mustRenderColliders = true;
 
 	return true;
 }
@@ -489,7 +489,12 @@ void ModuleRender::renderScene()
 		}
 
 		// Pass texture to shader
-		Texture *texture = gameObject->texture ? gameObject->texture : whitePixel;
+		Texture* texture = whitePixel;
+		if (gameObject->animation)
+			texture = gameObject->animation->getCurrentSprite();
+		else if (gameObject->texture)
+			texture = gameObject->texture;
+
 		ID3D11ShaderResourceView* texture_srv = (ID3D11ShaderResourceView*)texture->shaderResource;
 		ctx->PSSetShaderResources(0, 1, &texture_srv);
 

@@ -3,6 +3,7 @@
 #define USE_TASK_MANAGER
 
 struct Texture;
+struct Animation;
 
 class ModuleResources : public Module
 {

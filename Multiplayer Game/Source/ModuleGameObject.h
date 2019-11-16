@@ -13,6 +13,8 @@ struct GameObject
 	Texture * texture = nullptr;
 	int  order = 0;          // NOTE(jesus): determines the drawing order
 
+	Animation* animation = nullptr;
+
 	// Collider component
 	Collider *collider = nullptr;
 
