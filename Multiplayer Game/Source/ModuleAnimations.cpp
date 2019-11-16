@@ -1,4 +1,5 @@
 #include "Networks.h"
+#include "ModuleAnimations.h"
 
 ModuleAnimations::ModuleAnimations()
 {
@@ -6,6 +7,16 @@ ModuleAnimations::ModuleAnimations()
 
 ModuleAnimations::~ModuleAnimations()
 {
+}
+
+bool ModuleAnimations::cleanUp()
+{
+	for (auto &animation : animations)
+	{
+		animation.clean();
+	}
+
+	return true;
 }
 
 Animation* ModuleAnimations::createAnimation(const char* tag)

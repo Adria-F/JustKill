@@ -38,13 +38,15 @@ public:
 	ModuleAnimations();
 	~ModuleAnimations();
 
+	bool cleanUp() override;
+
 	Animation* createAnimation(const char* tag);
 	Animation* useAnimation(const char* tag);
 	void removeAnimation(Animation* animation);
 
 private:
 
-	Animation animations[256];
+	Animation animations[MAX_ANIMATIONS];
 	std::list<Animation*> objectsAnimations;
 };
 
