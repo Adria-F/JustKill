@@ -105,7 +105,6 @@ void ModuleNetworkingClient::onGui()
 void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, const sockaddr_in &fromAddress)
 {
 	lastPacketReceivedTime = Time.time;
-
 	ServerMessage message;
 	packet >> message;
 
@@ -127,9 +126,10 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 	}
 	else if (state == ClientState::Playing)
 	{
-		// TODO(jesus): Handle incoming messages from server
+		// TODO(jesus): Handle incoming messages from server		
 		if (message == ServerMessage::Replication)
 		{
+			App->delManager->processSequenceNumber(packet);
 			replicationManager.read(packet);
 		}
 	}
@@ -222,7 +222,7 @@ void ModuleNetworkingClient::onUpdate()
 
 			OutputMemoryStream ping;
 			ping << ClientMessage::Ping;
-
+			App->delManager->writeSequenceNumberPendingAck(ping);
 			sendPacket(ping, serverAddress);
 		}
 

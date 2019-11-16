@@ -45,6 +45,7 @@ private:
 public:
 
 	// Modules
+	DeliveryManager		   *delManager = nullptr;
 	ModulePlatform         *modPlatform = nullptr;
 	ModuleTaskManager      *modTaskManager = nullptr;
 	ModuleNetworkingServer *modNetServer = nullptr;

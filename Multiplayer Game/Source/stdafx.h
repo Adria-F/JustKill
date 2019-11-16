@@ -25,6 +25,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <vector>
+#include <map>
 #include <deque>
 #include <algorithm>
 

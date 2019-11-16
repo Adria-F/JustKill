@@ -13,6 +13,7 @@
 Application::Application()
 {
 	// Create modules
+	delManager = new DeliveryManager();
 	ADD_MODULE          (ModulePlatform,         modPlatform);
 	ADD_MODULE          (ModuleRender,           modRender);
 	ADD_MODULE_DISABLED (ModuleNetworkingServer, modNetServer);

@@ -196,6 +196,10 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				proxy->gameObject->behaviour->onMouse(proxy->mouse);
 			}
 		}
+		else if (message == ClientMessage::Ping)
+		{
+			App->delManager->processAckdSequenceNumbers(packet);
+		}
 
 		if (proxy != nullptr)
 		{
@@ -217,9 +221,10 @@ void ModuleNetworkingServer::onUpdate()
 			{
 				clientProxy.secondsSinceLastReplication += Time.deltaTime;
 
-				OutputMemoryStream packet;
+				OutputMemoryStream packet;	
 				packet << ServerMessage::Replication;
-
+				Delivery* delivery = App->delManager->writeSequenceNumber(packet);
+				delivery->deleagate = new DeliveryDelegate(); //TODOAdPi
 				// TODO(jesus): If the replication interval passed and the replication manager of this proxy
 				//              has pending data, write and send a replication packet to this client.
 				if (clientProxy.secondsSinceLastReplication > replicationDeliveryIntervalSeconds)
@@ -252,6 +257,9 @@ void ModuleNetworkingServer::onUpdate()
 		{
 			secondsSinceLastPing = 0.0f;
 		}
+
+		//Check for TimeOutPackets DeliveryManager
+		App->delManager->processTimedOutPackets();
 	}
 }
 

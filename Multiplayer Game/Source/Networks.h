@@ -74,7 +74,6 @@ struct Collider;
 struct Behaviour;
 class Task;
 class Screen;
-
 enum class ColliderType
 {
 	None,
@@ -223,7 +222,6 @@ private:
 
 // NOTE(jesus): Global random generation object
 extern RandomNumberGenerator Random;
-
 
 ////////////////////////////////////////////////////////////////////////
 // FRAMEWORK HEADERS
