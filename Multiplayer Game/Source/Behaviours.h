@@ -96,16 +96,26 @@ struct Zombie : public Behaviour
 		if (c2.type == ColliderType::Bullet && c2.gameObject->tag != gameObject->tag)
 		{
 			NetworkDestroy(c2.gameObject); // Destroy the bullet
-			NetworkDestroy(c1.gameObject); //Destroy the zombie
-			App->modNetServer->spawnExplosion(c1.gameObject->position);
+			GameObject* explosion = App->modNetServer->spawnExplosion(gameObject);
 		}
 	}
 };
 
 struct Explosion : public Behaviour
 {
+	GameObject* zombie;
+
 	void update() override
 	{
+		if (gameObject->animation && gameObject->animation->getCurrentSpriteIndex() >= 2 && zombie->state == GameObject::State::UPDATING)
+		{
+			NetworkDestroy(zombie);
+			App->modNetServer->spawnBlood(zombie->position, zombie->angle);
+		}
 
+		if (gameObject->animation && gameObject->animation->isFinished())
+		{
+			NetworkDestroy(gameObject);
+		}
 	}
 };

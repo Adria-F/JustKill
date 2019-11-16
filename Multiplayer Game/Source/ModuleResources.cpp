@@ -41,6 +41,17 @@ bool ModuleResources::init()
 	loadTextureAsync("Textures/VFX/Zombie_Death/sprite7.png",	&explosion7);
 #endif
 
+	//Create Animations
+	explosion = App->modAnimations->createAnimation("explosion");
+	explosion->spriteDuration = 0.1f;
+	explosion->pushTexture(&explosion1);
+	explosion->pushTexture(&explosion2);
+	explosion->pushTexture(&explosion3);
+	explosion->pushTexture(&explosion4);
+	explosion->pushTexture(&explosion5);
+	explosion->pushTexture(&explosion6);
+	explosion->pushTexture(&explosion7);
+
 	return true;
 }
 

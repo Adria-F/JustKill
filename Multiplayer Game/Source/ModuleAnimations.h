@@ -30,6 +30,7 @@ public:
 	void setUsed(bool used);
 	void clean();
 	Texture* getCurrentSprite() const;
+	int getCurrentSpriteIndex() const;
 };
 
 class ModuleAnimations : public Module
@@ -42,11 +43,9 @@ public:
 
 	Animation* createAnimation(const char* tag);
 	Animation* useAnimation(const char* tag);
-	void removeAnimation(Animation* animation);
 
 private:
 
 	Animation animations[MAX_ANIMATIONS];
-	std::list<Animation*> objectsAnimations;
 };
 
