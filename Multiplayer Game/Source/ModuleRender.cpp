@@ -285,6 +285,8 @@ bool ModuleRender::init()
 		return false;
 	}
 
+	mustRenderColliders = true;
+
 	return true;
 }
 

@@ -6,6 +6,7 @@ struct Texture
 {
 	ID3D11ShaderResourceView *shaderResource = nullptr;
 	const char *filename = "";
+	uint32 UID = 0;
 	vec2 size = vec2{ -1.0f };
 	bool used = false;
 };
@@ -28,6 +29,8 @@ public:
 	Texture *loadTexture(void *pixels, int width, int height);
 
 	void freeTexture(Texture *texture);
+
+	Texture* getTexturebyUID(uint32 uid);
 
 
 private:

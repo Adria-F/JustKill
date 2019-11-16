@@ -8,15 +8,20 @@ class ModuleResources : public Module
 {
 public:
 
-	Texture *background = nullptr;
-	Texture *space = nullptr;
-	Texture *parking_lot = nullptr;
-	Texture *asteroid1 = nullptr;
-	Texture *asteroid2 = nullptr;
-	Texture *spacecraft1 = nullptr;
-	Texture *spacecraft2 = nullptr;
-	Texture *spacecraft3 = nullptr;
-	Texture *laser = nullptr;
+	Texture *background		= nullptr;
+	Texture *parking_lot	= nullptr;
+	Texture *robot			= nullptr;
+	Texture *zombie			= nullptr;
+	Texture *blood			= nullptr;
+	Texture *bullet			= nullptr;
+	Texture *shot			= nullptr;
+	Texture *explosion1		= nullptr;
+	Texture *explosion2		= nullptr;
+	Texture *explosion3		= nullptr;
+	Texture *explosion4		= nullptr;
+	Texture *explosion5		= nullptr;
+	Texture *explosion6		= nullptr;
+	Texture *explosion7		= nullptr;
 
 	bool finishedLoading = false;
 private:
