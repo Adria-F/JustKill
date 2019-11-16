@@ -132,9 +132,6 @@
     <ClCompile Include="ModuleNetworkingCommons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleAnimations.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -261,9 +258,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Behaviours.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleAnimations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

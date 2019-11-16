@@ -51,7 +51,6 @@ public:
 	ModuleNetworkingClient *modNetClient = nullptr;
 	ModuleLinkingContext   *modLinkingContext = nullptr;
 	ModuleTextures         *modTextures = nullptr;
-	ModuleAnimations	   *modAnimations = nullptr;
 	ModuleResources        *modResources = nullptr;
 	ModuleGameObject       *modGameObject = nullptr;
 	ModuleCollision        *modCollision = nullptr;

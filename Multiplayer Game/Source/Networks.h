@@ -31,7 +31,6 @@
 #define MAX_SCREENS                                       32
 #define MAX_TASKS                                        128
 #define MAX_TEXTURES                                     512
-#define MAX_ANIMATIONS									 256
 #define MAX_GAME_OBJECTS                                4096
 #define MAX_COLLIDERS                       MAX_GAME_OBJECTS
 #define MAX_CLIENTS                                       32
@@ -71,7 +70,6 @@ typedef double real64;
 
 struct GameObject;
 struct Texture;
-struct Animation;
 struct Collider;
 struct Behaviour;
 class Task;
@@ -81,7 +79,8 @@ enum class ColliderType
 {
 	None,
 	Player,
-	Laser
+	Zombie,
+	Bullet
 };
 
 
@@ -152,6 +151,8 @@ struct MouseController
 	int16 x = 0;
 	int16 y = 0;
 	ButtonState buttons[5] = {}; //Left, Mid, Right, X1, X2
+	int screenReferenceWidth = 0;
+	int screenReferenceHeight = 0;
 };
 
 // NOTE(jesus): Global object to access the mouse
@@ -224,6 +225,12 @@ private:
 // NOTE(jesus): Global random generation object
 extern RandomNumberGenerator Random;
 
+////////////////////////////////////////////////////////////////////////
+// HASH ID BASED ON STRING
+////////////////////////////////////////////////////////////////////////
+
+extern std::hash<std::string> idGenerator;
+
 
 ////////////////////////////////////////////////////////////////////////
 // FRAMEWORK HEADERS
@@ -251,7 +258,6 @@ extern RandomNumberGenerator Random;
 #include "ModuleScreen.h"
 #include "ModuleTaskManager.h"
 #include "ModuleTextures.h"
-#include "ModuleAnimations.h"
 #include "ModuleUI.h"
 #include "Screen.h"
 #include "ScreenLoading.h"

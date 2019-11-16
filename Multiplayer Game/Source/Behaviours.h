@@ -15,7 +15,7 @@ struct Behaviour
 	virtual void onCollisionTriggered(Collider &c1, Collider &c2) { }
 };
 
-struct Spaceship : public Behaviour
+struct Player : public Behaviour
 {
 	float shotingDelay = 0.5f;
 	float lastShotTime = 0.0f;
@@ -38,7 +38,7 @@ struct Spaceship : public Behaviour
 
 	void onMouse(const MouseController& mouse) override
 	{
-		vec2 mousePos = vec2{ (float)(mouse.x - Window.width / 2), (float)(mouse.y - Window.height / 2)};
+		vec2 mousePos = vec2{ (float)(mouse.x - mouse.screenReferenceWidth / 2), (float)(mouse.y - mouse.screenReferenceHeight / 2)};
 
 		gameObject->angle = degreesFromRadians(atan2(mousePos.y, mousePos.x)) +90;
 		NetworkUpdate(gameObject);
@@ -54,7 +54,7 @@ struct Spaceship : public Behaviour
 
 	void onCollisionTriggered(Collider &c1, Collider &c2) override
 	{
-		if (c2.type == ColliderType::Laser && c2.gameObject->tag != gameObject->tag)
+		if (c2.type == ColliderType::Bullet && c2.gameObject->tag != gameObject->tag)
 		{
 			NetworkDestroy(c2.gameObject); // Destroy the laser
 
@@ -81,5 +81,31 @@ struct Laser : public Behaviour
 
 		const float lifetimeSeconds = 2.0f;
 		if (secondsSinceCreation > lifetimeSeconds) NetworkDestroy(gameObject);
+	}
+};
+
+struct Zombie : public Behaviour
+{
+	void update() override
+	{
+
+	}
+
+	void onCollisionTriggered(Collider &c1, Collider &c2) override
+	{
+		if (c2.type == ColliderType::Bullet && c2.gameObject->tag != gameObject->tag)
+		{
+			NetworkDestroy(c2.gameObject); // Destroy the bullet
+			NetworkDestroy(c1.gameObject); //Destroy the zombie
+			App->modNetServer->spawnExplosion(c1.gameObject->position);
+		}
+	}
+};
+
+struct Explosion : public Behaviour
+{
+	void update() override
+	{
+
 	}
 };
