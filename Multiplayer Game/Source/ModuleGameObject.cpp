@@ -94,7 +94,7 @@ void ModuleGameObject::Destroy(GameObject * gameObject)
 	
 	if (gameObject->animation)
 	{
-		App->modAnimations->removeAnimation(gameObject->animation);
+		//TODO(Adrià) Should delete animation instance
 	}
 
 	gameObject->state = GameObject::DESTROYING;

@@ -24,6 +24,8 @@ public:
 	Texture *explosion6		= nullptr;
 	Texture *explosion7		= nullptr;
 
+	Animation* explosion	= nullptr;
+
 	bool finishedLoading = false;
 private:
 

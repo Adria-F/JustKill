@@ -1,4 +1,5 @@
 #include "Networks.h"
+#include "ModuleAnimations.h"
 
 ModuleAnimations::ModuleAnimations()
 {
@@ -30,7 +31,7 @@ Animation* ModuleAnimations::createAnimation(const char* tag)
 		}
 	}
 
-	//ELOG("All available animations used");
+	ELOG("All available animations used");
 
 	return nullptr;
 }
@@ -50,19 +51,12 @@ Animation* ModuleAnimations::useAnimation(const char * tag)
 			}
 
 			objectAnimation->Start();
-			objectsAnimations.push_back(objectAnimation);
 			return objectAnimation;
 		}
 	}
 
-	//WLOG("Animation tag not found");
+	WLOG("Animation tag not found");
 	return nullptr;
-}
-
-void ModuleAnimations::removeAnimation(Animation* animation)
-{
-	objectsAnimations.remove(animation);
-	delete animation;
 }
 
 void Animation::Start()
@@ -115,4 +109,9 @@ void Animation::clean()
 Texture* Animation::getCurrentSprite() const
 {
 	return *sprites[currentSprite];
+}
+
+int Animation::getCurrentSpriteIndex() const
+{
+	return currentSprite;
 }

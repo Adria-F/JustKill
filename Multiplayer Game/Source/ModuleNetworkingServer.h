@@ -83,7 +83,7 @@ public:
 
 	//Zombie related objects
 	GameObject* spawnZombie(vec2 position);
-	GameObject* spawnExplosion(vec2 position);
+	GameObject* spawnExplosion(GameObject* zombie);
 	GameObject* spawnBlood(vec2 position, float angle);
 
 

@@ -357,6 +357,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	clientProxy.gameObject = Instantiate();
 	clientProxy.gameObject->size = { 100, 100 };
 	clientProxy.gameObject->angle = 45.0f;
+	clientProxy.gameObject->order = 1;
 
 	clientProxy.gameObject->texture = App->modResources->robot;
 
@@ -392,6 +393,7 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent)
 	GameObject *gameObject = Instantiate();
 	gameObject->size = { 20, 60 };
 	gameObject->angle = parent->angle;
+	gameObject->order = 2;
 	gameObject->position = parent->position;
 	gameObject->texture = App->modResources->bullet;
 	gameObject->collider = App->modCollision->addCollider(ColliderType::Bullet, gameObject);
@@ -421,6 +423,7 @@ GameObject * ModuleNetworkingServer::spawnZombie(vec2 position)
 	GameObject* zombie = Instantiate();
 	zombie->size = { 100, 100 };
 	zombie->position = position;
+	zombie->order = 1;
 	zombie->texture = App->modResources->zombie;
 	zombie->collider = App->modCollision->addCollider(ColliderType::Zombie, zombie);
 	zombie->collider->isTrigger = true;
@@ -443,15 +446,18 @@ GameObject * ModuleNetworkingServer::spawnZombie(vec2 position)
 	return zombie;
 }
 
-GameObject * ModuleNetworkingServer::spawnExplosion(vec2 position)
+GameObject * ModuleNetworkingServer::spawnExplosion(GameObject* zombie)
 {
 	GameObject* object = Instantiate();
 	object->size = { 100, 100 };
-	object->position = position;
-	object->texture = App->modResources->explosion3;
+	object->position = zombie->position;
+	object->order = 2;
+	object->animation = App->modResources->explosion;
 
-	object->behaviour = new Explosion();
-	object->behaviour->gameObject = object;
+	Explosion* script = new Explosion();
+	script->gameObject = object;
+	script->zombie = zombie;
+	object->behaviour = script;
 
 	App->modLinkingContext->registerNetworkGameObject(object);
 
@@ -470,6 +476,29 @@ GameObject * ModuleNetworkingServer::spawnExplosion(vec2 position)
 
 GameObject * ModuleNetworkingServer::spawnBlood(vec2 position, float angle)
 {
+	GameObject* object = Instantiate();
+	object->size = { 100, 100 };
+	object->position = position;
+	object->angle = angle;
+	object->texture = App->modResources->blood;
+	object->order = 0;
+
+	object->behaviour = new Explosion();
+	object->behaviour->gameObject = object;
+
+	App->modLinkingContext->registerNetworkGameObject(object);
+
+	// Notify all client proxies' replication manager to create the object remotely
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clientProxies[i].connected)
+		{
+			// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
+			clientProxies[i].replicationManager.create(object->networkId);
+		}
+	}
+
+	return object;
 	return nullptr;
 }
 
