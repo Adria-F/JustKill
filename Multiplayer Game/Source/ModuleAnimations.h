@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <list>
 
 struct Texture;
 
@@ -14,7 +12,6 @@ public:
 private:
 
 	float lastSpriteTime = 0.0f;
-	float time = 0.0f; //Ugly
 
 	int currentSprite = 0;
 	bool used = false;
@@ -35,7 +32,7 @@ public:
 	Texture* getCurrentSprite() const;
 };
 
-class ModuleAnimations
+class ModuleAnimations : public Module
 {
 public:
 	ModuleAnimations();

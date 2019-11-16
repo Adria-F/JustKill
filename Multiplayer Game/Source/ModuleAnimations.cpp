@@ -1,9 +1,8 @@
-#include "ModuleAnimations.h"
+#include "Networks.h"
 
 ModuleAnimations::ModuleAnimations()
 {
 }
-
 
 ModuleAnimations::~ModuleAnimations()
 {
@@ -64,10 +63,9 @@ void Animation::Start()
 
 void Animation::Update()
 {
-	time += 0.016f; //Fake adding deltaTime each frame
-	if (time - lastSpriteTime >= spriteDuration)
+	if (Time.time - lastSpriteTime >= spriteDuration)
 	{
-		lastSpriteTime = time;
+		lastSpriteTime = Time.time;
 		currentSprite++;
 		if (currentSprite == sprites.size())
 		{
@@ -83,7 +81,7 @@ void Animation::pushTexture(Texture** texture)
 
 bool Animation::isFinished() const
 {
-	return currentSprite == sprites.size()-1 && time-lastSpriteTime >= spriteDuration;
+	return currentSprite == sprites.size()-1 && Time.time-lastSpriteTime >= spriteDuration;
 }
 
 bool Animation::isUsed() const
