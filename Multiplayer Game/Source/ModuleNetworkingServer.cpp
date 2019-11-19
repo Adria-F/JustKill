@@ -363,7 +363,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 {
 	// Create a new game object with the player properties
 	clientProxy.gameObject = Instantiate();
-	clientProxy.gameObject->size = { 100, 100 };
+	clientProxy.gameObject->size = { 43, 49 };
 	clientProxy.gameObject->angle = 45.0f;
 	clientProxy.gameObject->order = 1;
 
@@ -399,7 +399,7 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent)
 {
 	// Create a new game object with the player properties
 	GameObject *gameObject = Instantiate();
-	gameObject->size = { 20, 60 };
+	gameObject->size = { 8, 14 };
 	gameObject->angle = parent->angle;
 	gameObject->order = 2;
 	gameObject->position = parent->position;
@@ -429,7 +429,7 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent)
 GameObject * ModuleNetworkingServer::spawnZombie(vec2 position)
 {
 	GameObject* zombie = Instantiate();
-	zombie->size = { 100, 100 };
+	zombie->size = { 43, 35 };
 	zombie->position = position;
 	zombie->order = 1;
 	zombie->texture = App->modResources->zombie;
@@ -457,7 +457,7 @@ GameObject * ModuleNetworkingServer::spawnZombie(vec2 position)
 GameObject * ModuleNetworkingServer::spawnExplosion(GameObject* zombie)
 {
 	GameObject* object = Instantiate();
-	object->size = { 100, 100 };
+	object->size = { 60, 60 };
 	object->position = zombie->position;
 	object->order = 2;
 	object->animation = App->modResources->explosion;
@@ -485,7 +485,7 @@ GameObject * ModuleNetworkingServer::spawnExplosion(GameObject* zombie)
 GameObject * ModuleNetworkingServer::spawnBlood(vec2 position, float angle)
 {
 	GameObject* object = Instantiate();
-	object->size = { 100, 100 };
+	object->size = { 50, 50 };
 	object->position = position;
 	object->angle = angle;
 	object->texture = App->modResources->blood;

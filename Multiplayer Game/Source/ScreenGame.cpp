@@ -1,9 +1,6 @@
 #include "Networks.h"
 
-GameObject *spaceTopLeft = nullptr;
-GameObject *spaceTopRight = nullptr;
-GameObject *spaceBottomLeft = nullptr;
-GameObject *spaceBottomRight = nullptr;
+GameObject *background = nullptr;
 
 void ScreenGame::enable()
 {
@@ -19,20 +16,10 @@ void ScreenGame::enable()
 		App->modNetClient->setPlayerInfo(playerName, spaceshipType);
 		App->modNetClient->setEnabled(true);
 	}
-	App->modResources->parking_lot->size.x *= 4.0f;
-	App->modResources->parking_lot->size.y *= 4.0f;
-	spaceTopLeft = Instantiate();
-	spaceTopLeft->texture = App->modResources->parking_lot;
-	spaceTopLeft->order = -1;
-	spaceTopRight = Instantiate();
-	spaceTopRight->texture = App->modResources->parking_lot;
-	spaceTopRight->order = -1;
-	spaceBottomLeft = Instantiate();
-	spaceBottomLeft->texture = App->modResources->parking_lot;
-	spaceBottomLeft->order = -1;
-	spaceBottomRight = Instantiate();
-	spaceBottomRight->texture = App->modResources->parking_lot;
-	spaceBottomRight->order = -1;
+
+	background = Instantiate();
+	background->texture = App->modResources->parking_lot;
+	background->order = -1;
 }
 
 void ScreenGame::update()
@@ -41,18 +28,14 @@ void ScreenGame::update()
 	{
 		App->modScreen->swapScreensWithTransition(this, App->modScreen->screenMainMenu);
 	}
-	else
-	{
-		if (!isServer)
-		{
-			vec2 camPos = App->modRender->cameraPosition;
-			vec2 bgSize = spaceTopLeft->texture->size;
-			spaceTopLeft->position = bgSize * floor(camPos / bgSize);
-			spaceTopRight->position = bgSize * (floor(camPos / bgSize) + vec2{ 1.0f, 0.0f });
-			spaceBottomLeft->position = bgSize * (floor(camPos / bgSize) + vec2{ 0.0f, 1.0f });
-			spaceBottomRight->position = bgSize * (floor(camPos / bgSize) + vec2{ 1.0f, 1.0f });;
-		}
-	}
+	//else
+	//{
+	//	if (!isServer)
+	//	{
+	//		vec2 camPos = App->modRender->cameraPosition;
+	//		vec2 bgSize = background->texture->size;
+	//	}
+	//}
 }
 
 void ScreenGame::gui()
@@ -61,8 +44,5 @@ void ScreenGame::gui()
 
 void ScreenGame::disable()
 {
-	Destroy(spaceTopLeft);
-	Destroy(spaceTopRight);
-	Destroy(spaceBottomLeft);
-	Destroy(spaceBottomRight);
+	Destroy(background);
 }
