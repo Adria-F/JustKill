@@ -224,7 +224,8 @@ void ModuleNetworkingServer::onUpdate()
 				OutputMemoryStream packet;	
 				packet << ServerMessage::Replication;
 				Delivery* delivery = App->delManager->writeSequenceNumber(packet);
-				delivery->deleagate = new DeliveryDelegate(); //TODOAdPi
+				delivery->deleagate = new DeliveryDelegateReplication(); //TODOAdPi
+				((DeliveryDelegateReplication*)delivery->deleagate)->replicationCommands = clientProxy.replicationManager.GetCommands();
 				// TODO(jesus): If the replication interval passed and the replication manager of this proxy
 				//              has pending data, write and send a replication packet to this client.
 				if (clientProxy.secondsSinceLastReplication > replicationDeliveryIntervalSeconds)

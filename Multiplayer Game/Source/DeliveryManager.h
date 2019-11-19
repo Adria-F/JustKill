@@ -1,6 +1,5 @@
 #pragma once
-
-
+#include "ReplicationManagerServer.h"
 
 class DeliveryManager;
 
@@ -10,6 +9,16 @@ public:
 	virtual void onDeliverySuccess(DeliveryManager * deliverymanager) {};
 	virtual void onDeliveryFailure(DeliveryManager * deliveryManager) {};
 };
+
+class DeliveryDelegateReplication : public DeliveryDelegate
+{
+public:
+	void onDeliveryFailure(DeliveryManager * deliveryManagerr) override;
+	void onDeliverySuccess(DeliveryManager * deliveryManager) override;
+public:
+	std::map<uint32, ReplicationAction> replicationCommands;
+};
+
 
 struct Delivery
 {
