@@ -20,6 +20,8 @@ struct Player : public Behaviour
 	float shotingDelay = 0.5f;
 	float lastShotTime = 0.0f;
 
+	vec2 shot_offset = { 10.0f,30.0f };
+
 	void start() override
 	{
 		gameObject->tag = (uint32)(Random.next() * UINT_MAX);
@@ -47,7 +49,7 @@ struct Player : public Behaviour
 		{
 			lastShotTime = Time.time;
 
-			GameObject* laser = App->modNetServer->spawnBullet(gameObject);
+			GameObject* laser = App->modNetServer->spawnBullet(gameObject, shot_offset);
 			laser->tag = gameObject->tag;
 		}
 	}

@@ -396,14 +396,16 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	return clientProxy.gameObject;
 }
 
-GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent)
+GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset)
 {
 	// Create a new game object with the player properties
 	GameObject *gameObject = Instantiate();
 	gameObject->size = { 8, 14 };
 	gameObject->angle = parent->angle;
 	gameObject->order = 2;
-	gameObject->position = parent->position;
+	vec2 forward = vec2FromDegrees(parent->angle);
+	vec2 right = { -forward.y, forward.x };
+	gameObject->position = parent->position + offset.x*right + offset.y*forward;
 	gameObject->texture = App->modResources->bullet;
 	gameObject->collider = App->modCollision->addCollider(ColliderType::Bullet, gameObject);
 
