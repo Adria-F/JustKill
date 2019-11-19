@@ -1,4 +1,5 @@
 #include "Networks.h"
+#include "DeliveryManager.h"
 
 Delivery * DeliveryManager::writeSequenceNumber(OutputMemoryStream & packet)
 {
@@ -61,7 +62,7 @@ void DeliveryManager::processTimedOutPackets()
 	{
 		if (Time.time - (*it).second->startingTime > (*it).second->dispatchTime)
 		{
-			(*it).second->deleagate->onDeliveryFailure(this);
+			(*it).second->deleagate->onDeliveryFailure(this);			
 
 			eraseList.push_back((*it).first);
 		}
@@ -76,4 +77,15 @@ void DeliveryManager::processTimedOutPackets()
 void DeliveryManager::clear()
 {
 
+}
+
+void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryManagerr)
+{
+
+	
+}
+
+void DeliveryDelegateReplication::onDeliverySuccess(DeliveryManager * deliveryManager)
+{
+	LOG("HOLA");
 }

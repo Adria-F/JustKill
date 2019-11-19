@@ -19,6 +19,11 @@ void ReplicationManagerServer::destroy(uint32 networkId)
 	commands[networkId] = ReplicationAction::Destroy;
 }
 
+std::map<uint32, ReplicationAction> ReplicationManagerServer::GetCommands()
+{
+	return commands;
+}
+
 bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 {
 	if (commands.size() == 0)
