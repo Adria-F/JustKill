@@ -28,6 +28,7 @@ bool ModuleResources::init()
 #else
 	loadTextureAsync("Textures/Environment/parking_lot.png",	&parking_lot);
 	loadTextureAsync("Textures/Entities/Player/robot.png",      &robot);
+	loadTextureAsync("Textures/Entities/Player/dead.png", &dead);
 	loadTextureAsync("Textures/Entities/Zombie/zombie.png",     &zombie);
 	loadTextureAsync("Textures/VFX/blood.png",					&blood);
 	loadTextureAsync("Textures/VFX/bullet.png",					&bullet);
