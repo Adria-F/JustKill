@@ -21,6 +21,7 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 				packet >> go->size.x;
 				packet >> go->size.y;
 				packet >> go->angle;
+				packet >> go->order;
 				
 				bool haveAnimation = false;
 				packet >> haveAnimation;
@@ -49,6 +50,15 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 			packet >> go->position.x;
 			packet >> go->position.y;
 			packet >> go->angle;
+			int32 UID;
+			packet >> UID;
+			if (UID != -1)
+			{
+				go->texture = App->modTextures->getTexturebyUID(UID);
+				packet >> go->size.x;
+				packet >> go->size.y;
+				packet >> go->order;
+			}
 		}
 		else if (action == ReplicationAction::Destroy)
 		{

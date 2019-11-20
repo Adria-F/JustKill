@@ -86,9 +86,23 @@ public:
 	GameObject* spawnExplosion(GameObject* zombie);
 	GameObject* spawnBlood(vec2 position, float angle);
 
-
+	//Render Order
+	// Layer -1 - MAP
+	// Layer 0 - BLOOD
+	// Layer 1 - DEAD PLAYERS
+	// Layer 2 - ZOMBIES
+	// Layer 3 - PLAYERS
+	// Layer 4 - BULLETS
+	// Layer 5 - REZ UI
+	// Layer 6 - EXPLOSIONS
 
 private:
+
+	//Get Players
+
+	std::vector<GameObject*> getAllClientPlayers();
+	friend std::vector<GameObject*>(getPlayers)();
+
 
 	//////////////////////////////////////////////////////////////////////
 	// Updating / destroying network objects
@@ -130,3 +144,5 @@ void NetworkUpdate(GameObject *gameObject);
 // sure to notify the destruction of the object to all connected
 // machines.
 void NetworkDestroy(GameObject *gameObject);
+
+std::vector<GameObject*> getPlayers();

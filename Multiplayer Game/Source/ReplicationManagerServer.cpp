@@ -41,6 +41,7 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 			packet << go->size.x;
 			packet << go->size.y;
 			packet << go->angle;
+			packet << go->order;
 			packet << (go->animation != nullptr); //Boolean to know if there is animation
 
 			if (go->animation)
@@ -58,6 +59,17 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 			packet << go->position.x;
 			packet << go->position.y;
 			packet << go->angle;
+			if (go->texture != nullptr)
+			{
+				packet << go->texture->UID;
+				packet << go->size.x;
+				packet << go->size.y;
+				packet << go->order;
+			}
+			else
+			{
+				packet << -1;
+			}
 		}
 	}
 

@@ -362,7 +362,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	clientProxy.gameObject = Instantiate();
 	clientProxy.gameObject->size = { 43, 49 };
 	clientProxy.gameObject->angle = 45.0f;
-	clientProxy.gameObject->order = 1;
+	clientProxy.gameObject->order = 3;
 
 	clientProxy.gameObject->texture = App->modResources->robot;
 
@@ -387,7 +387,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 		}
 	}
 
-	spawnZombie({ 0,0 });
+	spawnZombie({ 50,500 });
 
 	return clientProxy.gameObject;
 }
@@ -398,7 +398,7 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 	GameObject *gameObject = Instantiate();
 	gameObject->size = { 8, 14 };
 	gameObject->angle = parent->angle;
-	gameObject->order = 2;
+	gameObject->order = 4;
 	vec2 forward = vec2FromDegrees(parent->angle);
 	vec2 right = { -forward.y, forward.x };
 	gameObject->position = parent->position + offset.x*right + offset.y*forward;
@@ -430,7 +430,7 @@ GameObject * ModuleNetworkingServer::spawnZombie(vec2 position)
 	GameObject* zombie = Instantiate();
 	zombie->size = { 43, 35 };
 	zombie->position = position;
-	zombie->order = 1;
+	zombie->order = 2;
 	zombie->texture = App->modResources->zombie;
 	zombie->collider = App->modCollision->addCollider(ColliderType::Zombie, zombie);
 	zombie->collider->isTrigger = true;
@@ -458,7 +458,7 @@ GameObject * ModuleNetworkingServer::spawnExplosion(GameObject* zombie)
 	GameObject* object = Instantiate();
 	object->size = { 60, 60 };
 	object->position = zombie->position;
-	object->order = 2;
+	object->order = 6;
 	object->animation = App->modResources->explosion;
 
 	Explosion* script = new Explosion();
@@ -507,6 +507,19 @@ GameObject * ModuleNetworkingServer::spawnBlood(vec2 position, float angle)
 
 	return object;
 	return nullptr;
+}
+
+std::vector<GameObject*> ModuleNetworkingServer::getAllClientPlayers()
+{
+	std::vector<GameObject*> players;
+
+	for (auto &client : clientProxies)
+	{
+		if (client.connected)
+			players.push_back(client.gameObject);
+	}
+
+	return players;
 }
 
 
@@ -563,4 +576,9 @@ void NetworkDestroy(GameObject * gameObject)
 	ASSERT(App->modNetServer->isConnected());
 
 	App->modNetServer->destroyNetworkObject(gameObject);
+}
+
+std::vector<GameObject*> getPlayers()
+{
+	return App->modNetServer->getAllClientPlayers();
 }

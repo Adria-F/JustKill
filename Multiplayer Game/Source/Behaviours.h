@@ -28,9 +28,16 @@ struct Player : public Behaviour
 
 	int detectedPlayers = 0;
 
+	float immunityDuration = 1.0f;
+	float lastHit = 0.0f;
+
+	int initialHealth = 10;
+	int health = 10;
+
 	void start() override
 	{
 		gameObject->tag = (uint32)(Random.next() * UINT_MAX);
+		health = initialHealth;
 	}
 
 	void update() override
@@ -44,7 +51,11 @@ struct Player : public Behaviour
 		{
 			isDown = false;
 			rezDuration = 0.0f;
+			health = initialHealth;
 			gameObject->texture = App->modResources->robot;
+			gameObject->size = { 43,49 };
+			gameObject->order = 3;
+			NetworkUpdate(gameObject);
 		}
 	}
 
@@ -81,6 +92,27 @@ struct Player : public Behaviour
 
 	void onCollisionTriggered(Collider &c1, Collider &c2) override
 	{
+		if (c2.type == ColliderType::Zombie && c2.gameObject->tag != gameObject->tag)
+		{
+			if (!isDown)
+			{
+				if (Time.time - lastHit > immunityDuration)
+				{
+					lastHit = Time.time;
+					health--;
+
+					if (health <= 0)
+					{
+						health = 0;
+						isDown = true;
+						gameObject->texture = App->modResources->dead;
+						gameObject->size = { 66,85 };
+						gameObject->order = 1;
+						NetworkUpdate(gameObject);
+					}
+				}
+			}
+		}
 		if (c2.type == ColliderType::Player && c2.gameObject->tag != gameObject->tag)
 		{
 			if (isDown)
@@ -112,9 +144,33 @@ struct Laser : public Behaviour
 
 struct Zombie : public Behaviour
 {
+	float movementSpeed = 50.0f;
+
 	void update() override
 	{
+		float shortestDistance = 15000000.0f;
+		GameObject* closest = nullptr;
+		std::vector<GameObject*> players = getPlayers();
+		for (auto &player : players)
+		{		
+			if (player->behaviour && !((Player*)player->behaviour)->isDown)
+			{
+				float distance = length2(player->position - gameObject->position); //Without square root
+				if (distance < shortestDistance)
+				{
+					shortestDistance = distance;
+					closest = player;
+				}
+			}
+		}
 
+		if (closest != nullptr)
+		{
+			vec2 direction = closest->position - gameObject->position;
+			gameObject->position += normalize(direction)*movementSpeed*Time.deltaTime;
+			gameObject->angle = degreesFromRadians(atan2(direction.y, direction.x)) + 90;
+			NetworkUpdate(gameObject);
+		}
 	}
 
 	void onCollisionTriggered(Collider &c1, Collider &c2) override
@@ -133,10 +189,11 @@ struct Explosion : public Behaviour
 
 	void update() override
 	{
-		if (gameObject->animation && gameObject->animation->getCurrentSpriteIndex() >= 2 && zombie->state == GameObject::State::UPDATING)
+		if (zombie && gameObject->animation && gameObject->animation->getCurrentSpriteIndex() >= 2 && zombie->state == GameObject::State::UPDATING)
 		{
 			NetworkDestroy(zombie);
 			App->modNetServer->spawnBlood(zombie->position, zombie->angle);
+			zombie = nullptr;
 		}
 
 		if (gameObject->animation && gameObject->animation->isFinished())
