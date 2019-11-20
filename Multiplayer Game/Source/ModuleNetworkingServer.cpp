@@ -167,33 +167,27 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 					packet >> inputData.horizontalAxis;
 					packet >> inputData.verticalAxis;
 					packet >> inputData.buttonBits;
+					packet >> inputData.mouseX;
+					packet >> inputData.mouseY;
+					packet >> inputData.leftButton;
 
 					if (inputData.sequenceNumber >= proxy->nextExpectedInputSequenceNumber)
 					{
+						//Process Keyboard
 						proxy->gamepad.horizontalAxis = inputData.horizontalAxis;
 						proxy->gamepad.verticalAxis = inputData.verticalAxis;
 						unpackInputControllerButtons(inputData.buttonBits, proxy->gamepad);
 						proxy->gameObject->behaviour->onInput(proxy->gamepad);
+
+						//Process Mouse
+						proxy->mouse.x = inputData.mouseX;
+						proxy->mouse.y = inputData.mouseY;
+						proxy->mouse.buttons[0] = (ButtonState)inputData.leftButton;
+						proxy->gameObject->behaviour->onMouse(proxy->mouse);
+
 						proxy->nextExpectedInputSequenceNumber = inputData.sequenceNumber + 1;
 					}
 				}
-			}
-		}
-		else if (message == ClientMessage::Mouse)
-		{
-			if (proxy != nullptr)
-			{
-				packet >> proxy->mouse.x;
-				packet >> proxy->mouse.y;
-				packet >> proxy->mouse.buttons[0];
-				packet >> proxy->mouse.buttons[1];
-				packet >> proxy->mouse.buttons[2];
-				packet >> proxy->mouse.buttons[3];
-				packet >> proxy->mouse.buttons[4];
-				packet >> proxy->mouse.screenReferenceWidth;
-				packet >> proxy->mouse.screenReferenceHeight;
-
-				proxy->gameObject->behaviour->onMouse(proxy->mouse);
 			}
 		}
 		else if (message == ClientMessage::Ping)
@@ -223,6 +217,8 @@ void ModuleNetworkingServer::onUpdate()
 
 				OutputMemoryStream packet;	
 				packet << ServerMessage::Replication;
+				packet << clientProxy.nextExpectedInputSequenceNumber-1; //ACK of last received input
+
 				Delivery* delivery = App->delManager->writeSequenceNumber(packet);
 				delivery->deleagate = new DeliveryDelegateReplication(); //TODOAdPi
 				((DeliveryDelegateReplication*)delivery->deleagate)->replicationCommands = clientProxy.replicationManager.GetCommands();

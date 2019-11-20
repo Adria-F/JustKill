@@ -152,8 +152,6 @@ struct MouseController
 	int16 x = 0;
 	int16 y = 0;
 	ButtonState buttons[5] = {}; //Left, Mid, Right, X1, X2
-	int screenReferenceWidth = 0;
-	int screenReferenceHeight = 0;
 };
 
 // NOTE(jesus): Global object to access the mouse

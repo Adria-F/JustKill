@@ -66,9 +66,7 @@ struct Player : public Behaviour
 	{
 		if (!isDown)
 		{
-			vec2 mousePos = vec2{ (float)(mouse.x - mouse.screenReferenceWidth / 2), (float)(mouse.y - mouse.screenReferenceHeight / 2) };
-
-			gameObject->angle = degreesFromRadians(atan2(mousePos.y, mousePos.x)) + 90;
+			gameObject->angle = degreesFromRadians(atan2(mouse.y, mouse.x)) + 90;
 			NetworkUpdate(gameObject);
 
 			if (mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)

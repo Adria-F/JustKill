@@ -129,6 +129,11 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 		// TODO(jesus): Handle incoming messages from server		
 		if (message == ServerMessage::Replication)
 		{
+			//Receive ACK of input
+			uint32 lastPackedProccessed;
+			packet >> lastPackedProccessed;
+			inputDataFront = lastPackedProccessed + 1;
+			
 			App->delManager->processSequenceNumber(packet);
 			replicationManager.read(packet);
 		}
@@ -169,6 +174,9 @@ void ModuleNetworkingClient::onUpdate()
 			inputPacketData.horizontalAxis = Input.horizontalAxis;
 			inputPacketData.verticalAxis = Input.verticalAxis;
 			inputPacketData.buttonBits = packInputControllerButtons(Input);
+			inputPacketData.mouseX = Mouse.x - Window.width / 2;
+			inputPacketData.mouseY = Mouse.y - Window.height / 2;
+			inputPacketData.leftButton = Mouse.buttons[0];
 
 			// Create packet (if there's input and the input delivery interval exceeded)
 			if (secondsSinceLastInputDelivery > inputDeliveryIntervalSeconds)
@@ -185,34 +193,16 @@ void ModuleNetworkingClient::onUpdate()
 					packet << inputPacketData.horizontalAxis;
 					packet << inputPacketData.verticalAxis;
 					packet << inputPacketData.buttonBits;
+					packet << inputPacketData.mouseX;
+					packet << inputPacketData.mouseY;
+					packet << inputPacketData.leftButton;
 				}
 
 				// Clear the queue
-				inputDataFront = inputDataBack;
+				//inputDataFront = inputDataBack;
 
 				sendPacket(packet, serverAddress);
 			}
-		}
-
-		//Send Mouse
-		if (secondsSinceLastMouseDelivery > mouseDeliveryIntervalSeconds)
-		{
-			secondsSinceLastMouseDelivery = 0.0f;
-
-			OutputMemoryStream packet;
-			packet << ClientMessage::Mouse;
-			packet << Mouse.x;
-			packet << Mouse.y;
-			packet << Mouse.buttons[0];
-			packet << Mouse.buttons[1];
-			packet << Mouse.buttons[2];
-			packet << Mouse.buttons[3];
-			packet << Mouse.buttons[4];
-			packet << Window.width;
-			packet << Window.height;
-
-			sendPacket(packet, serverAddress);
-			//LOG("X:%d | Y:%d", Mouse.x-Window.width/2, Mouse.y-Window.height/2);
 		}
 
 		//Send pings to server

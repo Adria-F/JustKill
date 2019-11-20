@@ -4,7 +4,6 @@ enum class ClientMessage
 {
 	Hello,
 	Input,
-	Mouse,
 	Ping
 };
 
