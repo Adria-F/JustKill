@@ -22,6 +22,11 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 				packet >> go->size.y;
 				packet >> go->angle;
 				packet >> go->order;
+
+				go->final_position = go->position;
+				go->initial_position = go->position;
+				go->final_angle = go->angle;
+				go->initial_angle = go->angle;
 				
 				bool haveAnimation = false;
 				packet >> haveAnimation;
@@ -47,9 +52,22 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 		if (action == ReplicationAction::Update)
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
-			packet >> go->position.x;
-			packet >> go->position.y;
-			packet >> go->angle;
+			
+			vec2 position;
+			float angle;
+			packet >> position.x;
+			packet >> position.y;
+			packet >> angle;
+			if (App->modGameObject->interpolateEntities)
+			{
+				go->newReplicationState(position, angle);
+			}
+			else
+			{
+				go->position = position;
+				go->angle = angle;
+			}
+
 			int32 UID;
 			packet >> UID;
 			if (UID != -1)

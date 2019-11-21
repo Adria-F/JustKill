@@ -37,6 +37,7 @@ void ModuleNetworkingServer::onStart()
 	}
 
 	state = ServerState::Listening;
+	App->modGameObject->interpolateEntities = false;
 
 	secondsSinceLastPing = 0.0f;
 }
@@ -226,6 +227,7 @@ void ModuleNetworkingServer::onUpdate()
 				//              has pending data, write and send a replication packet to this client.
 				if (clientProxy.secondsSinceLastReplication > replicationDeliveryIntervalSeconds)
 				{
+					clientProxy.secondsSinceLastReplication = 0.0f;
 					if (clientProxy.replicationManager.write(packet))
 					{
 						sendPacket(packet, clientProxy.address);

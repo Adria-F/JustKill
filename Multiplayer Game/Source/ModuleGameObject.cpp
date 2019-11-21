@@ -1,4 +1,30 @@
 #include "Networks.h"
+#include "ModuleGameObject.h"
+
+void GameObject::newReplicationState(vec2 position, float angle)
+{
+	initial_position = this->position;
+	initial_angle = this->angle;
+
+	final_position = position;
+	final_angle = angle;
+
+	interpolationSecondsElapsed = 0.0f;
+}
+
+void GameObject::Interpolate()
+{
+	float factor = 1.0f;
+	if (App->modNetClient->replicationPing > 0)
+	{
+		factor = interpolationSecondsElapsed / App->modNetClient->replicationPing;
+	}
+
+	position = initial_position + (final_position - initial_position)*factor;
+	angle = initial_angle + (final_angle - initial_angle)*factor;
+
+	interpolationSecondsElapsed += Time.deltaTime;
+}
 
 void GameObject::releaseComponents()
 {
@@ -48,6 +74,8 @@ bool ModuleGameObject::update()
 	{
 		if (gameObject.state == GameObject::UPDATING)
 		{
+			if (interpolateEntities)
+				gameObject.Interpolate();
 			if (gameObject.behaviour != nullptr)
 				gameObject.behaviour->update();
 			if (gameObject.animation)

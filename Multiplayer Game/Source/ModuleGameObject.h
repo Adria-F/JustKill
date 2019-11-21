@@ -2,6 +2,9 @@
 
 struct GameObject
 {
+	void newReplicationState(vec2 position, float angle);
+	void Interpolate();
+
 	// Transform component
 	vec2 position = vec2{ 0.0f, 0.0f };
 
@@ -13,6 +16,16 @@ struct GameObject
 	Texture * texture = nullptr;
 	int  order = 0;          // NOTE(jesus): determines the drawing order
 
+	// For entity interpolation
+	vec2 initial_position = vec2{ 0.0f, 0.0f };
+	float initial_angle = 0.0f;
+
+	vec2 final_position = vec2{ 0.0f, 0.0f };
+	float final_angle = 0.0f;
+
+	float interpolationSecondsElapsed = 0.0f;
+
+	// Animation component
 	Animation* animation = nullptr;
 
 	// Collider component
@@ -63,6 +76,8 @@ public:
 
 
 	GameObject gameObjects[MAX_GAME_OBJECTS] = {};
+
+	bool interpolateEntities = false;
 };
 
 

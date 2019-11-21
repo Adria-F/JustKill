@@ -14,7 +14,8 @@ public:
 
 	void setPlayerInfo(const char *playerName, uint8 spaceshipType);
 
-
+	// Replication Delay
+	float replicationPing = 0.0f;
 
 private:
 
@@ -84,5 +85,6 @@ private:
 
 	double lastPacketReceivedTime = 0.0f; // NOTE(jesus): Use this to implement client timeout
 	float secondsSinceLastPing = 0.0f;    // NOTE(jesus): Use this to implement ping to server
+	double lastReplicationTime = 0.0f;
 };
 

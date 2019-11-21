@@ -53,6 +53,8 @@ void ModuleNetworkingClient::onStart()
 	secondsSinceLastInputDelivery = 0.0f;
 	secondsSinceLastPing = 0.0f;
 	lastPacketReceivedTime = Time.time;
+
+	//App->modGameObject->interpolateEntities = true;
 }
 
 void ModuleNetworkingClient::onGui()
@@ -68,6 +70,7 @@ void ModuleNetworkingClient::onGui()
 		else if (state == ClientState::Playing)
 		{
 			ImGui::Text("Connected to server");
+			ImGui::Text(" - Replication Ping: %f", replicationPing);
 
 			ImGui::Separator();
 
@@ -98,6 +101,11 @@ void ModuleNetworkingClient::onGui()
 
 			ImGui::Text("Input:");
 			ImGui::InputFloat("Delivery interval (s)", &inputDeliveryIntervalSeconds, 0.01f, 0.1f, 4);
+
+			ImGui::Separator();
+
+			ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
+			//ImGui::Checkbox("Client prediction", false);
 		}
 	}
 }
@@ -129,6 +137,8 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 		// TODO(jesus): Handle incoming messages from server		
 		if (message == ServerMessage::Replication)
 		{
+			replicationPing = Time.time - lastReplicationTime;
+			lastReplicationTime = Time.time;
 			//Receive ACK of input
 			uint32 lastPackedProccessed;
 			packet >> lastPackedProccessed;
