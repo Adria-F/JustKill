@@ -1,5 +1,6 @@
 #include "Networks.h"
 #include "DeliveryManager.h"
+#include "ReplicationManagerServer.h"
 
 Delivery * DeliveryManager::writeSequenceNumber(OutputMemoryStream & packet)
 {
@@ -81,8 +82,22 @@ void DeliveryManager::clear()
 
 void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryManagerr)
 {
-
-	
+	//if (replicationCommands.size() > 0)
+	//{
+	//	OutputMemoryStream packet;
+	//	packet << ServerMessage::Replication;
+	//	
+	//
+	//	for (std::map<uint32, ReplicationAction>::iterator it_c = replicationCommands.begin(); it_c != replicationCommands.end(); ++it_c)
+	//	{
+	//		packet << (*it_c).first;
+	//		packet << (*it_c).second;
+	//		if ((*it_c).second == ReplicationAction::Create)
+	//		{
+	//
+	//		}
+	//	}
+	//}
 }
 
 void DeliveryDelegateReplication::onDeliverySuccess(DeliveryManager * deliveryManager)
