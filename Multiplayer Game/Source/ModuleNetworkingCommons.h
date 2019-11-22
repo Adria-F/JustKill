@@ -14,4 +14,6 @@ struct InputPacketData
 
 uint16 packInputControllerButtons(const InputController &input);
 
+InputController inputControllerFromInputPacketData(const InputPacketData &inputPacketData, const InputController &previousGamepad);
+
 void unpackInputControllerButtons(uint16 buttonBits, InputController &input);

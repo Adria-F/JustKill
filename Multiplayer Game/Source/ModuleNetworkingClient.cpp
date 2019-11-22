@@ -70,7 +70,7 @@ void ModuleNetworkingClient::onGui()
 		else if (state == ClientState::Playing)
 		{
 			ImGui::Text("Connected to server");
-			ImGui::Text(" - Replication Ping: %f", replicationPing);
+			ImGui::Text(" - Replication Ping: %f", replicationPing);			
 
 			ImGui::Separator();
 
@@ -199,6 +199,7 @@ void ModuleNetworkingClient::onUpdate()
 				for (uint32 i = inputDataFront; i < inputDataBack; ++i)
 				{
 					InputPacketData &inputPacketData = inputData[i % ArrayCount(inputData)];
+
 					packet << inputPacketData.sequenceNumber;
 					packet << inputPacketData.horizontalAxis;
 					packet << inputPacketData.verticalAxis;
@@ -206,10 +207,30 @@ void ModuleNetworkingClient::onUpdate()
 					packet << inputPacketData.mouseX;
 					packet << inputPacketData.mouseY;
 					packet << inputPacketData.leftButton;
+					
+					//Client Side Prediction WORK IN PROGRESS!
+					//InputController currentinput;
+					//inputControllerFromInputPacketData(inputPacketData, currentinput);
+					//GameObject *playerGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
+					//if (playerGameObject != nullptr)
+					//{
+					//	if (playerGameObject->behaviour == nullptr)
+					//	{
+					//		playerGameObject->behaviour = new Player;
+					//	}
+					//	else
+					//	{
+					//		playerGameObject->behaviour->onInput(currentinput);
+					//	}
+					//	
+					//}
+					
 				}
 
 				// Clear the queue
 				//inputDataFront = inputDataBack;
+
+
 
 				sendPacket(packet, serverAddress);
 			}
