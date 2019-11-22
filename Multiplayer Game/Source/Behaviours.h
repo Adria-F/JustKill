@@ -34,6 +34,8 @@ struct Player : public Behaviour
 	int initialHealth = 10;
 	int health = 10;
 
+	GameObject* rez = nullptr;
+
 	void start() override
 	{
 		gameObject->tag = (uint32)(Random.next() * UINT_MAX);
@@ -45,6 +47,11 @@ struct Player : public Behaviour
 		if (isDown && detectedPlayers == 0)
 		{
 			rezDuration = 0.0f;
+			if (rez != nullptr)
+			{
+				NetworkDestroy(rez);
+				rez = nullptr;
+			}
 		}
 		detectedPlayers = 0;
 		if (isDown && rezDuration > rezTime)
@@ -56,6 +63,8 @@ struct Player : public Behaviour
 			gameObject->size = { 43,49 };
 			gameObject->order = 3;
 			NetworkUpdate(gameObject);
+			NetworkDestroy(rez);
+			rez = nullptr;
 		}
 	}
 
@@ -119,6 +128,11 @@ struct Player : public Behaviour
 			{
 				detectedPlayers++;
 				rezDuration += Time.deltaTime;
+
+				if (rez == nullptr)
+				{
+					rez = App->modNetServer->spawnRezUI(gameObject->position);
+				}
 			}
 		}
 	}

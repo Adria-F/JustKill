@@ -40,6 +40,15 @@ bool ModuleResources::init()
 	loadTextureAsync("Textures/VFX/Zombie_Death/sprite5.png",	&explosion5);
 	loadTextureAsync("Textures/VFX/Zombie_Death/sprite6.png",	&explosion6);
 	loadTextureAsync("Textures/VFX/Zombie_Death/sprite7.png",	&explosion7);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar0.png",  &rez1);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar1.png",	&rez2);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar2.png",	&rez3);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar3.png",	&rez4);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar4.png",	&rez5);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar5.png",	&rez6);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar6.png",	&rez7);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar7.png",	&rez8);
+	loadTextureAsync("Textures/VFX/Resurrection_Bar/bar8.png",	&rez9);
 #endif
 
 	//Create Animations
@@ -52,6 +61,18 @@ bool ModuleResources::init()
 	explosion->pushTexture(&explosion5);
 	explosion->pushTexture(&explosion6);
 	explosion->pushTexture(&explosion7);
+
+	rez = App->modAnimations->createAnimation("rez");
+	rez->spriteDuration = 1 / 3;
+	rez->pushTexture(&rez1);
+	rez->pushTexture(&rez2);
+	rez->pushTexture(&rez3);
+	rez->pushTexture(&rez4);
+	rez->pushTexture(&rez5);
+	rez->pushTexture(&rez6);
+	rez->pushTexture(&rez7);
+	rez->pushTexture(&rez8);
+	rez->pushTexture(&rez9);
 
 	return true;
 }

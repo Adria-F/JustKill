@@ -85,6 +85,7 @@ public:
 	GameObject* spawnZombie(vec2 position);
 	GameObject* spawnExplosion(GameObject* zombie);
 	GameObject* spawnBlood(vec2 position, float angle);
+	GameObject* spawnRezUI(vec2 position);
 
 	//Render Order
 	// Layer -1 - MAP
