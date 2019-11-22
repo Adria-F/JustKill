@@ -31,8 +31,8 @@ struct Player : public Behaviour
 	float immunityDuration = 1.0f;
 	float lastHit = 0.0f;
 
-	int initialHealth = 10;
-	int health = 10;
+	int initialHealth = 1;
+	int health = 0;
 
 	GameObject* rez = nullptr;
 
@@ -44,6 +44,11 @@ struct Player : public Behaviour
 
 	void update() override
 	{
+		if (rez != nullptr)
+		{
+			rez->animation->spriteDuration = (rezTime / (rez->animation->sprites.size()-1)) / detectedPlayers;
+			NetworkUpdate(rez, ReplicationAction::Update_Animation);
+		}
 		if (isDown && detectedPlayers == 0)
 		{
 			rezDuration = 0.0f;
@@ -52,6 +57,10 @@ struct Player : public Behaviour
 				NetworkDestroy(rez);
 				rez = nullptr;
 			}
+		}
+		if (detectedPlayers > 0)
+		{
+			rezDuration += Time.deltaTime;
 		}
 		detectedPlayers = 0;
 		if (isDown && rezDuration > rezTime)
@@ -62,7 +71,7 @@ struct Player : public Behaviour
 			gameObject->texture = App->modResources->robot;
 			gameObject->size = { 43,49 };
 			gameObject->order = 3;
-			NetworkUpdate(gameObject);
+			NetworkUpdate(gameObject, ReplicationAction::Update_Texture);
 			NetworkDestroy(rez);
 			rez = nullptr;
 		}
@@ -77,7 +86,7 @@ struct Player : public Behaviour
 				const float advanceSpeed = 200.0f;
 				gameObject->position += vec2{ 1,0 } *input.horizontalAxis * advanceSpeed * Time.deltaTime;
 				gameObject->position += vec2{ 0,-1 } *input.verticalAxis * advanceSpeed * Time.deltaTime;
-				NetworkUpdate(gameObject);
+				NetworkUpdate(gameObject, ReplicationAction::Update_Position);
 			}
 		}
 	}
@@ -87,7 +96,7 @@ struct Player : public Behaviour
 		if (!isDown)
 		{
 			gameObject->angle = degreesFromRadians(atan2(mouse.y, mouse.x)) + 90;
-			NetworkUpdate(gameObject);
+			NetworkUpdate(gameObject, ReplicationAction::Update_Position);
 
 			if (mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
 			{
@@ -117,7 +126,7 @@ struct Player : public Behaviour
 						gameObject->texture = App->modResources->dead;
 						gameObject->size = { 66,85 };
 						gameObject->order = 1;
-						NetworkUpdate(gameObject);
+						NetworkUpdate(gameObject, ReplicationAction::Update_Texture);
 					}
 				}
 			}
@@ -126,8 +135,7 @@ struct Player : public Behaviour
 		{
 			if (isDown)
 			{
-				detectedPlayers++;
-				rezDuration += Time.deltaTime;
+				detectedPlayers++;			
 
 				if (rez == nullptr)
 				{
@@ -149,7 +157,7 @@ struct Laser : public Behaviour
 
 		secondsSinceCreation += Time.deltaTime;
 
-		NetworkUpdate(gameObject);
+		NetworkUpdate(gameObject, ReplicationAction::Update_Position);
 
 		const float lifetimeSeconds = 2.0f;
 		if (secondsSinceCreation > lifetimeSeconds) NetworkDestroy(gameObject);
@@ -183,7 +191,7 @@ struct Zombie : public Behaviour
 			vec2 direction = closest->position - gameObject->position;
 			gameObject->position += normalize(direction)*movementSpeed*Time.deltaTime;
 			gameObject->angle = degreesFromRadians(atan2(direction.y, direction.x)) + 90;
-			NetworkUpdate(gameObject);
+			NetworkUpdate(gameObject, ReplicationAction::Update_Position);
 		}
 	}
 

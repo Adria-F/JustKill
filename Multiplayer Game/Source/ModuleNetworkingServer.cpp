@@ -461,7 +461,7 @@ GameObject * ModuleNetworkingServer::spawnExplosion(GameObject* zombie)
 	object->size = { 60, 60 };
 	object->position = zombie->position;
 	object->order = 6;
-	object->animation = App->modResources->explosion;
+	object->animation = App->modAnimations->useAnimation("explosion");
 
 	Explosion* script = new Explosion();
 	script->gameObject = object;
@@ -515,7 +515,7 @@ GameObject* ModuleNetworkingServer::spawnRezUI(vec2 position)
 	GameObject* object = Instantiate();
 	object->size = { 66, 85 };
 	object->position = position;
-	object->animation = App->modResources->rez;
+	object->animation = App->modAnimations->useAnimation("rez");
 	object->order = 5;
 
 	App->modLinkingContext->registerNetworkGameObject(object);
@@ -570,7 +570,7 @@ void ModuleNetworkingServer::destroyNetworkObject(GameObject * gameObject)
 	Destroy(gameObject);
 }
 
-void ModuleNetworkingServer::updateNetworkObject(GameObject * gameObject)
+void ModuleNetworkingServer::updateNetworkObject(GameObject * gameObject, ReplicationAction updateType)
 {
 	// Notify all client proxies' replication manager to destroy the object remotely
 	for (int i = 0; i < MAX_CLIENTS; ++i)
@@ -578,7 +578,7 @@ void ModuleNetworkingServer::updateNetworkObject(GameObject * gameObject)
 		if (clientProxies[i].connected)
 		{
 			// TODO(jesus): Notify this proxy's replication manager about the update of this game object
-			clientProxies[i].replicationManager.update(gameObject->networkId);
+			clientProxies[i].replicationManager.update(gameObject->networkId, updateType);
 		}
 	}
 }
@@ -588,11 +588,11 @@ void ModuleNetworkingServer::updateNetworkObject(GameObject * gameObject)
 // Global update / destruction of game objects
 //////////////////////////////////////////////////////////////////////
 
-void NetworkUpdate(GameObject * gameObject)
+void NetworkUpdate(GameObject * gameObject, ReplicationAction updateType)
 {
 	ASSERT(App->modNetServer->isConnected());
 
-	App->modNetServer->updateNetworkObject(gameObject);
+	App->modNetServer->updateNetworkObject(gameObject, updateType);
 }
 
 void NetworkDestroy(GameObject * gameObject)

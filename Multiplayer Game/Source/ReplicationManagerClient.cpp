@@ -44,39 +44,46 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 					go->texture = App->modTextures->getTexturebyUID(UID);
 				}
 			}
-			else
-			{
-				action = ReplicationAction::Update;
-			}
 		}
-		if (action == ReplicationAction::Update)
+		else if (action == ReplicationAction::Update_Position)
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
-			
+
 			vec2 position;
 			float angle;
 			packet >> position.x;
 			packet >> position.y;
 			packet >> angle;
-			if (App->modGameObject->interpolateEntities)
+			if (go != nullptr)
 			{
 				go->newReplicationState(position, angle);
+
+				if (!App->modGameObject->interpolateEntities)
+				{
+					go->position = position;
+					go->angle = angle;
+				}
 			}
-			else
-			{
-				go->position = position;
-				go->angle = angle;
-			}
+		}
+		else if (action == ReplicationAction::Update_Texture)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 
 			int32 UID;
 			packet >> UID;
-			if (UID != -1)
+			go->texture = App->modTextures->getTexturebyUID(UID);
+			packet >> go->size.x;
+			packet >> go->size.y;
+			packet >> go->order;
+		}
+		else if (action == ReplicationAction::Update_Animation)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
+			if (go->animation != nullptr)
 			{
-				go->texture = App->modTextures->getTexturebyUID(UID);
-				packet >> go->size.x;
-				packet >> go->size.y;
-				packet >> go->order;
+				packet >> go->animation->spriteDuration;
 			}
+
 		}
 		else if (action == ReplicationAction::Destroy)
 		{

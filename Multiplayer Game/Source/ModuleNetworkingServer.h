@@ -112,8 +112,8 @@ private:
 	void destroyNetworkObject(GameObject *gameObject);
 	friend void (NetworkDestroy)(GameObject *);
 
-	void updateNetworkObject(GameObject *gameObject);
-	friend void (NetworkUpdate)(GameObject *);
+	void updateNetworkObject(GameObject *gameObject, ReplicationAction updateType);
+	friend void (NetworkUpdate)(GameObject *, ReplicationAction updateType);
 
 
 
@@ -138,7 +138,7 @@ private:
 
 
 // NOTE(jesus): It marks an object for replication updates
-void NetworkUpdate(GameObject *gameObject);
+void NetworkUpdate(GameObject *gameObject, ReplicationAction updateType);
 
 // NOTE(jesus): For network objects, use this version instead of
 // the default Destroy(GameObject *gameObject) one. This one makes

@@ -63,7 +63,7 @@ bool ModuleResources::init()
 	explosion->pushTexture(&explosion7);
 
 	rez = App->modAnimations->createAnimation("rez");
-	rez->spriteDuration = 1 / 3;
+	rez->spriteDuration = 1.0f / 3.0f;
 	rez->pushTexture(&rez1);
 	rez->pushTexture(&rez2);
 	rez->pushTexture(&rez3);

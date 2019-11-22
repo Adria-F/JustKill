@@ -5,7 +5,9 @@ enum class ReplicationAction
 {
 	None,
 	Create,
-	Update,
+	Update_Position,
+	Update_Texture,
+	Update_Animation,
 	Destroy
 };
 
@@ -14,7 +16,7 @@ class ReplicationManagerServer
 public:
 
 	void create(uint32 networkId);
-	void update(uint32 networkId);
+	void update(uint32 networkId, ReplicationAction updateType);
 	void destroy(uint32 networkId);
 
 	std::map<uint32, ReplicationAction> GetCommands();

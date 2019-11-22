@@ -6,11 +6,11 @@ void ReplicationManagerServer::create(uint32 networkId)
 	commands[networkId] = ReplicationAction::Create;
 }
 
-void ReplicationManagerServer::update(uint32 networkId)
+void ReplicationManagerServer::update(uint32 networkId, ReplicationAction updateType)
 {
-	if (commands.find(networkId) == commands.end())
+	if (commands.find(networkId) == commands.end() || commands[networkId] == ReplicationAction::Update_Position)
 	{
-		commands[networkId] = ReplicationAction::Update;
+		commands[networkId] = updateType;
 	}
 }
 
@@ -53,12 +53,16 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 				packet << go->texture->UID;
 			}
 		}
-		if ((*it_c).second == ReplicationAction::Update)
+		else if ((*it_c).second == ReplicationAction::Update_Position)
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it_c).first);
 			packet << go->position.x;
 			packet << go->position.y;
 			packet << go->angle;
+		}
+		else if ((*it_c).second == ReplicationAction::Update_Texture)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it_c).first);
 			if (go->texture != nullptr)
 			{
 				packet << go->texture->UID;
@@ -66,9 +70,13 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 				packet << go->size.y;
 				packet << go->order;
 			}
-			else
+		}
+		else if ((*it_c).second == ReplicationAction::Update_Animation)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it_c).first);
+			if (go->animation != nullptr)
 			{
-				packet << -1;
+				packet << go->animation->spriteDuration;
 			}
 		}
 	}
