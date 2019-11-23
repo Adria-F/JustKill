@@ -57,6 +57,11 @@ void ModuleNetworkingServer::onGui()
 		
 		ImGui::Separator();
 
+		ImGui::Text("ZombieSpawnRatio");
+		ImGui::InputFloat("Spawning Interval (s)", &zombieSpawnRatio, 0.1f, 10.0f);
+
+		ImGui::Separator();
+
 		if (state == ServerState::Listening)
 		{
 			int count = 0;
@@ -259,6 +264,9 @@ void ModuleNetworkingServer::onUpdate()
 
 		//Check for TimeOutPackets DeliveryManager
 		App->delManager->processTimedOutPackets();
+
+		//Zombie Spawner WiP
+		ZombieSpawner();
 	}
 }
 
@@ -388,7 +396,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 			clientProxies[i].replicationManager.create(clientProxy.gameObject->networkId);
 		}
 	}
-
+	
 	spawnZombie({ 50,500 });
 
 	return clientProxy.gameObject;
@@ -425,6 +433,24 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 	}
 
 	return gameObject;
+}
+
+void ModuleNetworkingServer::ZombieSpawner()
+{
+	
+	timeSinceLastZombieSpawned += Time.deltaTime;
+	if (timeSinceLastZombieSpawned > zombieSpawnRatio)
+	{		
+		spawnZombie({ RandomFloat(-500.0f, 500.0f), RandomFloat(-500.0f, 500.0f) });
+		timeSinceLastZombieSpawned = 0.0f;
+	}
+	
+
+}
+
+float ModuleNetworkingServer::RandomFloat(float min, float max)
+{
+	return ((float)rand() / RAND_MAX) * (max - min) + min;
 }
 
 GameObject * ModuleNetworkingServer::spawnZombie(vec2 position)
