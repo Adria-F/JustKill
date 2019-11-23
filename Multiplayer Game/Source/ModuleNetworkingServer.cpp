@@ -221,19 +221,20 @@ void ModuleNetworkingServer::onUpdate()
 			if (clientProxy.connected)
 			{
 				clientProxy.secondsSinceLastReplication += Time.deltaTime;
-
-				OutputMemoryStream packet;	
-				packet << ServerMessage::Replication;
-				packet << clientProxy.nextExpectedInputSequenceNumber-1; //ACK of last received input
-
-				Delivery* delivery = App->delManager->writeSequenceNumber(packet);
-				delivery->deleagate = new DeliveryDelegateReplication(); //TODOAdPi
-				((DeliveryDelegateReplication*)delivery->deleagate)->replicationCommands = clientProxy.replicationManager.GetCommands();
-				((DeliveryDelegateReplication*)delivery->deleagate)->repManager = clientProxy.replicationManager;
+				
 				// TODO(jesus): If the replication interval passed and the replication manager of this proxy
 				//              has pending data, write and send a replication packet to this client.
-				if (clientProxy.secondsSinceLastReplication > replicationDeliveryIntervalSeconds)
+				if (clientProxy.secondsSinceLastReplication > replicationDeliveryIntervalSeconds && clientProxy.replicationManager.commands.size() > 0)
 				{
+					OutputMemoryStream packet;
+					packet << ServerMessage::Replication;
+					packet << clientProxy.nextExpectedInputSequenceNumber - 1; //ACK of last received input
+
+					Delivery* delivery = App->delManager->writeSequenceNumber(packet);
+					delivery->deleagate = new DeliveryDelegateReplication(); //TODOAdPi
+					((DeliveryDelegateReplication*)delivery->deleagate)->replicationCommands = clientProxy.replicationManager.GetCommands();
+					((DeliveryDelegateReplication*)delivery->deleagate)->repManager = clientProxy.replicationManager;
+
 					clientProxy.secondsSinceLastReplication = 0.0f;
 					if (clientProxy.replicationManager.write(packet))
 					{
