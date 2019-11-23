@@ -1,6 +1,8 @@
 #include "Networks.h"
 #include "ModuleGameObject.h"
 
+inline float Slerp(float from, float to, float step);
+
 void GameObject::newReplicationState(vec2 position, float angle)
 {
 	initial_position = this->position;
@@ -21,8 +23,8 @@ void GameObject::Interpolate()
 	}
 
 	position = initial_position + (final_position - initial_position)*factor;
-	angle = initial_angle + (final_angle - initial_angle)*factor;
-
+	angle = Slerp(initial_angle, final_angle, factor);
+	
 	interpolationSecondsElapsed += Time.deltaTime;
 }
 
@@ -137,4 +139,31 @@ GameObject * Instantiate()
 void Destroy(GameObject * gameObject)
 {
 	ModuleGameObject::Destroy(gameObject);
+}
+
+inline float Slerp(float from, float to, float step)
+{
+	if (step > 1.0f) step = 1.0f;
+	if (step == 0.0f) return from;
+	if (from > 360.0f) from -= 360.0f;
+	else if (from < 0.0f) from += 360.0f;
+	if (to > 360.0f) to -= 360.0f;
+	else if (to < 0.0f) to += 360.0f;
+	if (abs(from-to) < 1.0f || step == 1.0f) return to;
+
+	vec2 fromVector = vec2FromDegrees(from);
+	vec2 toVector = vec2FromDegrees(to);
+
+	float alpha = acos(dot(fromVector, toVector));
+	float sinAlpha = sin(alpha);
+
+	vec2 resultVector = (sin((1 - step)*alpha) / sinAlpha)*fromVector + (sin(step*alpha) / sinAlpha)*toVector;
+
+	float angle = atan2(resultVector.y, resultVector.x);
+	if (angle < 0.0f)
+	{
+		angle = 2*PI + angle;
+	}
+
+	return degreesFromRadians(angle)+90.0f;
 }
