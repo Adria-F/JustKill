@@ -1,11 +1,11 @@
 #include "Networks.h"
-
+#include "ReplicationManagerServer.h"
 
 Delivery * DeliveryManager::writeSequenceNumber(OutputMemoryStream & packet)
 {
 	packet << SNCount;
 	Delivery * ret = new Delivery();
-	ret->dispatchTime = 0.080; //TODOAdPi
+	ret->dispatchTime = 0.5; //TODOAdPi
 	ret->startingTime = Time.time;
 	deliveryMap[SNCount++] = ret;	
 	return ret;
@@ -20,6 +20,7 @@ bool DeliveryManager::processSequenceNumber(const InputMemoryStream & packet)
 	{
 		++SNExpected;
 		pendingList.push_back(SNRecieved);
+		LOG("Packet %i has been Recieved by Client", SNRecieved);
 		return true;
 	}
 	return false;
@@ -49,6 +50,7 @@ void DeliveryManager::processAckdSequenceNumbers(const InputMemoryStream & packe
 		if (deliveryMap.find(ACK) != deliveryMap.end())
 		{
 			deliveryMap[ACK]->deleagate->onDeliverySuccess(this);
+			LOG("Packet %i has been ACK", ACK);
 			deliveryMap.erase(ACK);
 		}
 	}
@@ -65,6 +67,8 @@ void DeliveryManager::processTimedOutPackets()
 			(*it).second->deleagate->onDeliveryFailure(this);
 
 			eraseList.push_back((*it).first);
+
+			LOG("Packet %i has been discarted by Time out", (*it).first);
 		}
 	}
 
@@ -85,8 +89,7 @@ void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryMa
 	if (replicationCommands.size() > 0)
 	{
 		for (std::map<uint32, ReplicationAction>::iterator it = replicationCommands.begin(); it != replicationCommands.end(); ++it)
-		{			
-			std::map<uint32, ReplicationAction> test = repManager.GetCommands();
+		{						
 			if ((*it).second == ReplicationAction::Create)
 			{
 				repManager.create((*it).first);
@@ -98,10 +101,10 @@ void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryMa
 			if ((*it).second == ReplicationAction::Update_Position)
 			{
 				repManager.update((*it).first, ReplicationAction::Update_Position);
-			}
-			std::map<uint32, ReplicationAction> test2 = repManager.GetCommands();
-		}		
+			}			
+		}
 	}
+	replicationCommands.clear();
 }
 
 void DeliveryDelegateReplication::onDeliverySuccess(DeliveryManager * deliveryManager)
