@@ -17,6 +17,7 @@ public:
 	void onDeliverySuccess(DeliveryManager * deliveryManager) override;
 public:
 	std::map<uint32, ReplicationAction> replicationCommands;
+	ReplicationManagerServer repManager;
 };
 
 

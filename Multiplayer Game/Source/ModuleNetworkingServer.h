@@ -91,6 +91,7 @@ public:
 	GameObject* spawnRezUI(vec2 position);
 	float zombieSpawnRatio = 5.0f;
 	float timeSinceLastZombieSpawned = 0;
+	bool isSpawnerEnabled = false;
 
 	//Render Order
 	// Layer -1 - MAP

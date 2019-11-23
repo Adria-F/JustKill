@@ -1,6 +1,5 @@
 #include "Networks.h"
-#include "DeliveryManager.h"
-#include "ReplicationManagerServer.h"
+
 
 Delivery * DeliveryManager::writeSequenceNumber(OutputMemoryStream & packet)
 {
@@ -63,7 +62,7 @@ void DeliveryManager::processTimedOutPackets()
 	{
 		if (Time.time - (*it).second->startingTime > (*it).second->dispatchTime)
 		{
-			(*it).second->deleagate->onDeliveryFailure(this);			
+			(*it).second->deleagate->onDeliveryFailure(this);
 
 			eraseList.push_back((*it).first);
 		}
@@ -82,22 +81,27 @@ void DeliveryManager::clear()
 
 void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryManagerr)
 {
-	//if (replicationCommands.size() > 0)
-	//{
-	//	OutputMemoryStream packet;
-	//	packet << ServerMessage::Replication;
-	//	
-	//
-	//	for (std::map<uint32, ReplicationAction>::iterator it_c = replicationCommands.begin(); it_c != replicationCommands.end(); ++it_c)
-	//	{
-	//		packet << (*it_c).first;
-	//		packet << (*it_c).second;
-	//		if ((*it_c).second == ReplicationAction::Create)
-	//		{
-	//
-	//		}
-	//	}
-	//}
+
+	if (replicationCommands.size() > 0)
+	{
+		for (std::map<uint32, ReplicationAction>::iterator it = replicationCommands.begin(); it != replicationCommands.end(); ++it)
+		{			
+			std::map<uint32, ReplicationAction> test = repManager.GetCommands();
+			if ((*it).second == ReplicationAction::Create)
+			{
+				repManager.create((*it).first);
+			}
+			if ((*it).second == ReplicationAction::Destroy)
+			{
+				repManager.destroy((*it).first);
+			}
+			if ((*it).second == ReplicationAction::Update_Position)
+			{
+				repManager.update((*it).first, ReplicationAction::Update_Position);
+			}
+			std::map<uint32, ReplicationAction> test2 = repManager.GetCommands();
+		}		
+	}
 }
 
 void DeliveryDelegateReplication::onDeliverySuccess(DeliveryManager * deliveryManager)

@@ -20,6 +20,7 @@ public:
 	void destroy(uint32 networkId);
 
 	std::map<uint32, ReplicationAction> GetCommands();
+	void InsertCommands(std::pair<uint32, ReplicationAction> command);
 
 	bool write(OutputMemoryStream& packet);
 

@@ -59,6 +59,7 @@ void ModuleNetworkingServer::onGui()
 
 		ImGui::Text("ZombieSpawnRatio");
 		ImGui::InputFloat("Spawning Interval (s)", &zombieSpawnRatio, 0.1f, 10.0f);
+		ImGui::Checkbox("Enable Zombie Spawner", &isSpawnerEnabled);
 
 		ImGui::Separator();
 
@@ -228,6 +229,7 @@ void ModuleNetworkingServer::onUpdate()
 				Delivery* delivery = App->delManager->writeSequenceNumber(packet);
 				delivery->deleagate = new DeliveryDelegateReplication(); //TODOAdPi
 				((DeliveryDelegateReplication*)delivery->deleagate)->replicationCommands = clientProxy.replicationManager.GetCommands();
+				((DeliveryDelegateReplication*)delivery->deleagate)->repManager = clientProxy.replicationManager;
 				// TODO(jesus): If the replication interval passed and the replication manager of this proxy
 				//              has pending data, write and send a replication packet to this client.
 				if (clientProxy.secondsSinceLastReplication > replicationDeliveryIntervalSeconds)
@@ -397,7 +399,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 		}
 	}
 	
-	spawnZombie({ 50,500 });
+	//spawnZombie({ 50,500 });
 
 	return clientProxy.gameObject;
 }
@@ -439,7 +441,7 @@ void ModuleNetworkingServer::ZombieSpawner()
 {
 	
 	timeSinceLastZombieSpawned += Time.deltaTime;
-	if (timeSinceLastZombieSpawned > zombieSpawnRatio)
+	if (timeSinceLastZombieSpawned > zombieSpawnRatio && isSpawnerEnabled)
 	{		
 		spawnZombie({ RandomFloat(-500.0f, 500.0f), RandomFloat(-500.0f, 500.0f) });
 		timeSinceLastZombieSpawned = 0.0f;

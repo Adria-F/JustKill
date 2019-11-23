@@ -24,6 +24,11 @@ std::map<uint32, ReplicationAction> ReplicationManagerServer::GetCommands()
 	return commands;
 }
 
+void ReplicationManagerServer::InsertCommands(std::pair<uint32, ReplicationAction> command)
+{
+	commands.insert(command);
+}
+
 bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 {
 	if (commands.size() == 0)
