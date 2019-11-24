@@ -59,6 +59,7 @@ bool ModuleUI::gui()
 			ImGui::PopStyleColor();
 		}
 	}
+	ImGui::SetScrollHere();
 
 	ImGui::End();
 

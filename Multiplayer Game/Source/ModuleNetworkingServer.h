@@ -139,7 +139,7 @@ private:
 
 	float secondsSinceLastPing = 0.0f;
 	
-	float replicationDeliveryIntervalSeconds = 0.1f;
+	float replicationDeliveryIntervalSeconds = REPLICATION_INTERVAL_SECONDS;
 };
 
 

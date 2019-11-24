@@ -14,6 +14,8 @@ public:
 
 	void disconnect();
 
+	float GetSimulatedLatency();
+
 
 protected:
 
@@ -32,7 +34,6 @@ protected:
 	void sendPacket(const char *data, uint32 size, const sockaddr_in &destAddress);
 
 	void reportError(const char *message);
-
 
 
 private:
@@ -93,9 +94,13 @@ private:
 	float simulatedLatency = 0.07f;
 	float simulatedJitter = 0.03f;
 	bool simulateDrops = false;
-	float simulatedDropRatio = 0.01f;
+	float simulatedDropRatio = 0.004f;
 	uint32 simulatedPacketsReceived = 0;
 	uint32 simulatedPacketsDropped = 0;
+	uint32 replicationPacketsDropped = 0;
+	uint32 pingPacketsDropped = 0;	
+	uint32 unwelcomePacketDropped = 0;
+	uint32 welcomePacketDropped = 0;
 
 	void simulatedRealWorldConditions_EnqueuePacket(const InputMemoryStream &packet, const sockaddr_in &fromAddress);
 

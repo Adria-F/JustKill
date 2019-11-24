@@ -1,17 +1,16 @@
 #include "Networks.h"
 #include "ReplicationManagerServer.h"
-
+//Server (Replication)
 Delivery * DeliveryManager::writeSequenceNumber(OutputMemoryStream & packet)
 {
 	packet << SNCount;
 	Delivery * ret = new Delivery();
-	ret->dispatchTime = 0.5; //TODOAdPi
+	ret->dispatchTime = PING_INTERVAL_SECONDS * 4.0F; //We will wait for 4 ACK before dispatching
 	ret->startingTime = Time.time;
-	deliveryMap[SNCount++] = ret;	
+	pendingDeliveryMap[SNCount++] = ret;		
 	return ret;
 }
-
-
+//Client (Replication)
 bool DeliveryManager::processSequenceNumber(const InputMemoryStream & packet)
 {
 	uint32 SNRecieved;
@@ -19,10 +18,15 @@ bool DeliveryManager::processSequenceNumber(const InputMemoryStream & packet)
 	if (SNRecieved == SNExpected)
 	{
 		++SNExpected;
-		pendingList.push_back(SNRecieved);
+		pendingACKList.push_back(SNRecieved);
 		LOG("Packet %i has been Recieved by Client", SNRecieved);
 		return true;
 	}
+	else
+	{
+		LOG("Difference between SNReieved and SNExpected: %i ", SNRecieved - SNExpected);
+	}
+		
 	return false;
 }
 
@@ -31,15 +35,20 @@ bool DeliveryManager::hasSequenceNumberPendingAck() const
 
 	return false;
 }
-
+//Client (Replication)
 void DeliveryManager::writeSequenceNumberPendingAck(OutputMemoryStream & packet)
 {
-	for (uint32 &iterator : pendingList)
+	if (packet.GetSize() > 0)
 	{
-		packet << iterator;
+		for (uint32 &iterator : pendingACKList)
+		{
+			packet << iterator;
+		}
 	}
-}
+	pendingACKList.clear();
 
+}
+//Server (Replication)
 void DeliveryManager::processAckdSequenceNumbers(const InputMemoryStream & packet)
 {
 	while (packet.RemainingByteCount() > 0)
@@ -47,26 +56,29 @@ void DeliveryManager::processAckdSequenceNumbers(const InputMemoryStream & packe
 		uint32 ACK;
 		packet >> ACK;
 
-		if (deliveryMap.find(ACK) != deliveryMap.end())
+		if (pendingDeliveryMap.find(ACK) != pendingDeliveryMap.end())
 		{
-			deliveryMap[ACK]->deleagate->onDeliverySuccess(this);
+			pendingDeliveryMap[ACK]->deleagate->onDeliverySuccess(this);			
+			pendingDeliveryMap.erase(ACK);
 			LOG("Packet %i has been ACK", ACK);
-			deliveryMap.erase(ACK);
 		}
 	}
 
 }
-
+//Server (Replication)
 void DeliveryManager::processTimedOutPackets()
 {
 	std::vector<uint32> eraseList;
-	for (std::map<uint32, Delivery*>::iterator it = deliveryMap.begin(); it != deliveryMap.end(); ++it)
+	for (std::map<uint32, Delivery*>::iterator it = pendingDeliveryMap.begin(); it != pendingDeliveryMap.end(); ++it)
 	{
-		if (Time.time - (*it).second->startingTime > (*it).second->dispatchTime)
+		float waitingTimeForACK = Time.time - (*it).second->startingTime;
+		if (waitingTimeForACK > (*it).second->dispatchTime)
 		{
 			(*it).second->deleagate->onDeliveryFailure(this);
 
 			eraseList.push_back((*it).first);
+
+			++SNExpected;
 
 			LOG("Packet %i has been discarted by Time out", (*it).first);
 		}
@@ -74,7 +86,7 @@ void DeliveryManager::processTimedOutPackets()
 
 	for (uint32 &it : eraseList)
 	{
-		deliveryMap.erase(it);
+		pendingDeliveryMap.erase(it);
 	}
 }
 
@@ -94,11 +106,11 @@ void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryMa
 			{
 				repManager.create((*it).first);
 			}
-			if ((*it).second == ReplicationAction::Destroy)
+			else if ((*it).second == ReplicationAction::Destroy)
 			{
 				repManager.destroy((*it).first);
 			}
-			if ((*it).second == ReplicationAction::Update_Position)
+			else if ((*it).second == ReplicationAction::Update_Position)
 			{
 				repManager.update((*it).first, ReplicationAction::Update_Position);
 			}			
@@ -109,5 +121,5 @@ void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryMa
 
 void DeliveryDelegateReplication::onDeliverySuccess(DeliveryManager * deliveryManager)
 {
-	LOG("HOLA");
+	
 }

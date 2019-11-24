@@ -24,6 +24,6 @@ public:
 
 	bool write(OutputMemoryStream& packet);
 
-private:
+public:
 	std::map<uint32, ReplicationAction> commands;
 };

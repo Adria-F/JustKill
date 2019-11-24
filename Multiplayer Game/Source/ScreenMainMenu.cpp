@@ -44,7 +44,7 @@ void ScreenMainMenu::gui()
 	static int remoteServerPort = 8888;
 	ImGui::InputInt("Server port", &remoteServerPort);
 
-	static char playerNameStr[64] = "";
+	static char playerNameStr[64] = "Starcraft II";
 	ImGui::InputText("Player name", playerNameStr, sizeof(playerNameStr));
 
 	const char* spaceshipTypes[] = { "Type 0", "Type 1", "Type 2" };

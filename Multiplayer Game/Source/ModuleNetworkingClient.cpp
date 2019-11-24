@@ -245,6 +245,7 @@ void ModuleNetworkingClient::onUpdate()
 			ping << ClientMessage::Ping;
 			App->delManager->writeSequenceNumberPendingAck(ping);
 			sendPacket(ping, serverAddress);
+			ping.Clear();
 		}
 
 		//Disconnect if waited too long

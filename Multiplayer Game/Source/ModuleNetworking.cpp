@@ -1,4 +1,5 @@
 #include "Networks.h"
+#include "ModuleNetworking.h"
 
 
 
@@ -98,6 +99,11 @@ void ModuleNetworking::reportError(const char* inOperationDesc)
 	ELOG("Error %s: %d- %s", inOperationDesc, errorNum, lpMsgBuf);
 }
 
+float ModuleNetworking::GetSimulatedLatency()
+{
+	return simulatedLatency;
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -185,6 +191,10 @@ bool ModuleNetworking::gui()
 					simulatedDropRatio = 0.01f;
 				}
 				ImGui::Text(" # Dropped packets: %d", simulatedPacketsDropped);
+				ImGui::Text(" #  - Replication Packets Dropped: %d", replicationPacketsDropped);
+				ImGui::Text(" #  - Ping Packets Dropped: %d", pingPacketsDropped);
+				ImGui::Text(" #  - Welcome Packets Dropped: %d", welcomePacketDropped);
+				ImGui::Text(" #  - Unwelcome Packets Dropped: %d", unwelcomePacketDropped);
 				ImGui::Text(" # Received packets: %d", simulatedPacketsReceived);
 			}
 		}
@@ -358,6 +368,26 @@ void ModuleNetworking::simulatedRealWorldConditions_EnqueuePacket(const InputMem
 	}
 	else
 	{
+		ServerMessage msg;
+		packet >> msg;
+		if (msg == ServerMessage::Replication)
+		{
+			++replicationPacketsDropped;
+		}
+		else if (msg == ServerMessage::Ping)
+		{
+			++pingPacketsDropped;
+		}		
+		else if (msg == ServerMessage::Welcome)
+		{
+			++welcomePacketDropped;
+
+		}
+		else if (msg == ServerMessage::Unwelcome)
+		{
+			++unwelcomePacketDropped;
+
+		}
 		simulatedPacketsDropped++;
 	}
 }

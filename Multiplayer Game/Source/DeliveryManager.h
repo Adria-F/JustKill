@@ -52,13 +52,13 @@ private:
 	// - The next outgoing sequence number
 	// - A list of pending deliveries
 	uint32 SNCount = 1;
-	std::map<uint32, Delivery*> deliveryMap;
+	std::map<uint32, Delivery*> pendingDeliveryMap;
 
 	//Private memebers (receiver side)
 	// - The next expected sequence number
 	// - A list of sequence numbers pending ack
 	uint32 SNExpected = 1;
-	std::vector<uint32> pendingList;
+	std::vector<uint32> pendingACKList;
 
 };
 
