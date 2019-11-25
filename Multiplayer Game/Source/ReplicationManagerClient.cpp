@@ -51,18 +51,18 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 
-			vec2 position;
+			vec2 serverposition;
 			float angle;
-			packet >> position.x;
-			packet >> position.y;
+			packet >> serverposition.x;
+			packet >> serverposition.y;
 			packet >> angle;
 			if (go != nullptr)
 			{
-				go->newReplicationState(position, angle);
+				go->newReplicationState(serverposition, angle);
 
-				if (!App->modGameObject->interpolateEntities || go->isPlayer)
+				if (!App->modGameObject->interpolateEntities /*|| go->isPlayer*/)
 				{
-					go->position = position;
+					go->position = serverposition;
 					go->angle = angle;
 				}
 			}

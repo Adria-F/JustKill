@@ -166,10 +166,11 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 			// Process the input packet and update the corresponding game object
 			if (proxy != nullptr)
 			{
+				InputPacketData inputData;
 				// Read input data
 				while (packet.RemainingByteCount() > 0)
 				{
-					InputPacketData inputData;
+
 					packet >> inputData.sequenceNumber;
 					packet >> inputData.horizontalAxis;
 					packet >> inputData.verticalAxis;

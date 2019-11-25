@@ -105,7 +105,7 @@ void ModuleNetworkingClient::onGui()
 			ImGui::Separator();
 
 			ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
-			//ImGui::Checkbox("Client prediction", false);
+			ImGui::Checkbox("Client prediction", &clientPrediction);
 		}
 	}
 }
@@ -122,7 +122,6 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 		{
 			packet >> playerId;
 			packet >> networkId;
-
 			LOG("ModuleNetworkingClient::onPacketReceived() - Welcome from server");
 			state = ClientState::Playing;
 		}
@@ -163,6 +162,8 @@ void ModuleNetworkingClient::onUpdate()
 		stream << playerName;
 		stream << spaceshipType;
 
+
+
 		sendPacket(stream, serverAddress);
 
 		state = ClientState::WaitingWelcome;
@@ -187,6 +188,31 @@ void ModuleNetworkingClient::onUpdate()
 			inputPacketData.mouseX = Mouse.x - Window.width / 2;
 			inputPacketData.mouseY = Mouse.y - Window.height / 2;
 			inputPacketData.leftButton = Mouse.buttons[0];
+			
+			//Client Side Prediction WORK IN PROGRESS!			
+			if (clientPrediction)
+			{
+				InputController finalInput = inputControllerFromInputPacketData(inputPacketData, Input);
+				GameObject *playerClientGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
+				if (playerClientGameObject != nullptr)
+				{
+					//Calculate Position
+					if (finalInput.horizontalAxis != 0.0f || finalInput.verticalAxis != 0.0f)
+					{
+						const float advanceSpeed = 200.0f;
+						playerClientGameObject->position += vec2{ 1,0 } *finalInput.horizontalAxis * advanceSpeed * Time.deltaTime;
+						playerClientGameObject->position += vec2{ 0,-1 } *finalInput.verticalAxis * advanceSpeed * Time.deltaTime;
+					}
+
+					//Calculate Angle
+					float shotingDelay = 0.5f;
+					float lastShotTime = 0.0f;
+					vec2 shot_offset = { 10.0f,30.0f };
+					vec2 mouse_final_pos = vec2{ (float)Mouse.x - Window.width / 2 , (float)Mouse.y - Window.height / 2 };
+					playerClientGameObject->angle = degreesFromRadians(atan2(mouse_final_pos.y, mouse_final_pos.x)) + 90;
+				}
+			}
+
 
 			// Create packet (if there's input and the input delivery interval exceeded)
 			if (secondsSinceLastInputDelivery > inputDeliveryIntervalSeconds)
@@ -207,24 +233,7 @@ void ModuleNetworkingClient::onUpdate()
 					packet << inputPacketData.mouseX;
 					packet << inputPacketData.mouseY;
 					packet << inputPacketData.leftButton;
-					
-					//Client Side Prediction WORK IN PROGRESS!
-					//InputController currentinput;
-					//inputControllerFromInputPacketData(inputPacketData, currentinput);
-					//GameObject *playerGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
-					//if (playerGameObject != nullptr)
-					//{
-					//	if (playerGameObject->behaviour == nullptr)
-					//	{
-					//		playerGameObject->behaviour = new Player;
-					//	}
-					//	else
-					//	{
-					//		playerGameObject->behaviour->onInput(currentinput);
-					//	}
-					//	
-					//}
-					
+										
 				}
 
 				// Clear the queue

@@ -27,8 +27,12 @@ uint16 packInputControllerButtons(const InputController & input)
 
 InputController inputControllerFromInputPacketData(const InputPacketData & inputPacketData, const InputController & previousGamepad)
 {
-	InputController currentInput;
+
+	InputController currentInput;	
+	currentInput.horizontalAxis = inputPacketData.horizontalAxis;
+	currentInput.verticalAxis = inputPacketData.verticalAxis;
 	unpackInputControllerButtons(inputPacketData.buttonBits, currentInput);
+	
 	
 
 	return currentInput;
