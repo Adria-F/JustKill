@@ -441,15 +441,18 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 
 void ModuleNetworkingServer::ZombieSpawner()
 {
-	
+	float safetyRadius = 175.0f; //Area from the center where zombies cannot spawn
+	float maxDistance = 850.0f; //Max distance where the zombies can spawn
+
 	timeSinceLastZombieSpawned += Time.deltaTime;
 	if (timeSinceLastZombieSpawned > zombieSpawnRatio && isSpawnerEnabled)
 	{		
-		spawnZombie({ RandomFloat(-500.0f, 500.0f), RandomFloat(-500.0f, 500.0f) });
+		vec2 randomDirection = vec2{RandomFloat(-1.0f,1.0f),RandomFloat(-1.0f,1.0f)};
+		float distance = RandomFloat(safetyRadius, maxDistance);
+
+		spawnZombie(normalize(randomDirection)*distance);
 		timeSinceLastZombieSpawned = 0.0f;
 	}
-	
-
 }
 
 float ModuleNetworkingServer::RandomFloat(float min, float max)

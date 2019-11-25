@@ -40,10 +40,17 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 					go->animation = App->modAnimations->useAnimation(tag.c_str());
 				}
 				else
-				{
+				{					
 					uint32 UID;
 					packet >> UID;
-					go->texture = App->modTextures->getTexturebyUID(UID);
+					if (go->isPlayer)
+					{
+						go->texture = App->modResources->playerRobot;
+					}
+					else
+					{
+						go->texture = App->modTextures->getTexturebyUID(UID);
+					}
 				}
 			}
 		}
@@ -74,6 +81,14 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			int32 UID;
 			packet >> UID;
 			go->texture = App->modTextures->getTexturebyUID(UID);
+			if (go->isPlayer && UID == App->modResources->dead->UID)
+			{
+				go->texture = App->modResources->playerDead;
+			}
+			else if (go->isPlayer && UID == App->modResources->robot->UID)
+			{
+				go->texture = App->modResources->playerRobot;
+			}
 			packet >> go->size.x;
 			packet >> go->size.y;
 			packet >> go->order;

@@ -12,7 +12,9 @@ public:
 	Texture *background		= nullptr;
 	Texture *parking_lot	= nullptr;
 	Texture *robot			= nullptr;
+	Texture *playerRobot	= nullptr;
 	Texture *dead			= nullptr;
+	Texture *playerDead		= nullptr;
 	Texture *zombie			= nullptr;
 	Texture *blood			= nullptr;
 	Texture *bullet			= nullptr;
