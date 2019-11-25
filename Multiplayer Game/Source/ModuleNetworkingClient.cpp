@@ -145,7 +145,7 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 			inputDataFront = lastPackedProccessed + 1;
 			
 			App->delManager->processSequenceNumber(packet);
-			replicationManager.read(packet);
+			replicationManager.read(packet, networkId);
 		}
 	}
 }

@@ -43,6 +43,9 @@ struct GameObject
 
 	// Tag for custom usage
 	uint32 tag = 0;
+
+	// Detect the player inside the client
+	bool isPlayer = false;
 	
 private:
 

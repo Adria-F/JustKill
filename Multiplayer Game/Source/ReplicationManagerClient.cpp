@@ -1,7 +1,7 @@
 #include "Networks.h"
 #include "ReplicationManagerClient.h"
 
-void ReplicationManagerClient::read(const InputMemoryStream & packet)
+void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 clientNetworkId)
 {
 	while (packet.RemainingByteCount() > 0)
 	{
@@ -22,6 +22,8 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 				packet >> go->size.y;
 				packet >> go->angle;
 				packet >> go->order;
+				if (networkId == clientNetworkId)
+					go->isPlayer = true;
 
 				go->final_position = go->position;
 				go->initial_position = go->position;
@@ -58,7 +60,7 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet)
 			{
 				go->newReplicationState(position, angle);
 
-				if (!App->modGameObject->interpolateEntities)
+				if (!App->modGameObject->interpolateEntities || go->isPlayer)
 				{
 					go->position = position;
 					go->angle = angle;
