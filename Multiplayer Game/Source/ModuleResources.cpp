@@ -27,6 +27,10 @@ bool ModuleResources::init()
 	completionRatio = 1.0f;
 #else
 	loadTextureAsync("Textures/Environment/parking_lot.png",	&parking_lot);
+	loadTextureAsync("Textures/Environment/collider_north.png", &collider_north);
+	loadTextureAsync("Textures/Environment/collider_east.png",  &collider_east);
+	loadTextureAsync("Textures/Environment/collider_west.png",  &collider_west);
+	loadTextureAsync("Textures/Environment/collider_south.png", &collider_south);
 	loadTextureAsync("Textures/Entities/Player/robot.png",      &robot);
 	loadTextureAsync("Textures/Entities/Player/playerRobot.png",&playerRobot);
 	loadTextureAsync("Textures/Entities/Player/dead.png",		&dead);

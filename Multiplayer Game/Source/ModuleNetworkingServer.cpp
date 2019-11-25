@@ -271,6 +271,24 @@ void ModuleNetworkingServer::onUpdate()
 
 		//Zombie Spawner WiP
 		ZombieSpawner();
+
+		if (Input.actionUp == ButtonState::Pressed)
+		{
+			App->modRender->cameraPosition.y -= 4.0;
+		}
+		if (Input.actionDown == ButtonState::Pressed)
+		{
+			App->modRender->cameraPosition.y += 4.0;
+		}
+		if (Input.actionLeft == ButtonState::Pressed)
+		{
+			App->modRender->cameraPosition.x -= 4.0;
+		}
+		if (Input.actionRight == ButtonState::Pressed)
+		{
+			App->modRender->cameraPosition.x += 4.0;
+		}
+		
 	}
 }
 

@@ -11,6 +11,10 @@ public:
 
 	Texture *background		= nullptr;
 	Texture *parking_lot	= nullptr;
+	Texture *collider_east	= nullptr;
+	Texture *collider_north = nullptr;
+	Texture *collider_south = nullptr;
+	Texture *collider_west  = nullptr;
 	Texture *robot			= nullptr;
 	Texture *playerRobot	= nullptr;
 	Texture *dead			= nullptr;

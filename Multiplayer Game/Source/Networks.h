@@ -81,7 +81,8 @@ enum class ColliderType
 	None,
 	Player,
 	Zombie,
-	Bullet
+	Bullet,
+	Wall
 };
 
 
