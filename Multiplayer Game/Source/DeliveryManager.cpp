@@ -15,9 +15,9 @@ bool DeliveryManager::processSequenceNumber(const InputMemoryStream & packet)
 {
 	uint32 SNRecieved;
 	packet >> SNRecieved;
-	if (SNRecieved == SNExpected)
+	if (SNRecieved >= SNExpected)
 	{
-		++SNExpected;
+		SNExpected = SNRecieved + 1;
 		pendingACKList.push_back(SNRecieved);
 		LOG("Packet %i has been Recieved by Client", SNRecieved);
 		return true;
@@ -71,14 +71,11 @@ void DeliveryManager::processTimedOutPackets()
 	std::vector<uint32> eraseList;
 	for (std::map<uint32, Delivery*>::iterator it = pendingDeliveryMap.begin(); it != pendingDeliveryMap.end(); ++it)
 	{
-		float waitingTimeForACK = Time.time - (*it).second->startingTime;
-		if (waitingTimeForACK > (*it).second->dispatchTime)
+		if (Time.time - (*it).second->startingTime > (*it).second->dispatchTime)
 		{
 			(*it).second->deleagate->onDeliveryFailure(this);
 
 			eraseList.push_back((*it).first);
-
-			++SNExpected;
 
 			LOG("Packet %i has been discarted by Time out", (*it).first);
 		}
@@ -95,9 +92,8 @@ void DeliveryManager::clear()
 
 }
 
-void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryManagerr)
+void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager* deliveryManagerr)
 {
-
 	if (replicationCommands.size() > 0)
 	{
 		for (std::map<uint32, ReplicationAction>::iterator it = replicationCommands.begin(); it != replicationCommands.end(); ++it)
@@ -119,7 +115,7 @@ void DeliveryDelegateReplication::onDeliveryFailure(DeliveryManager * deliveryMa
 	replicationCommands.clear();
 }
 
-void DeliveryDelegateReplication::onDeliverySuccess(DeliveryManager * deliveryManager)
+void DeliveryDelegateReplication::onDeliverySuccess(DeliveryManager* deliveryManager)
 {
 	
 }
