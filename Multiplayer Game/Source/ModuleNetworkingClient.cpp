@@ -1,4 +1,5 @@
 #include "Networks.h"
+#include "ModuleNetworkingClient.h"
 
 
 
@@ -17,6 +18,21 @@ void ModuleNetworkingClient::setPlayerInfo(const char * pPlayerName, uint8 pSpac
 {
 	playerName = pPlayerName;
 	spaceshipType = pSpaceshipType;
+}
+
+GameObject * ModuleNetworkingClient::spawnLaser(GameObject * player)
+{
+	GameObject *gameObject = Instantiate();
+	gameObject->size = { 7, 1000 };
+	gameObject->angle = player->angle;
+	gameObject->order = 2;
+	vec2 forward = vec2FromDegrees(player->angle);
+	vec2 right = { -forward.y, forward.x };
+	vec2 offset = { 10.0f, 500.0f };
+	gameObject->position = player->position + offset.x*right + offset.y*forward;
+	gameObject->texture = App->modResources->laser;
+
+	return gameObject;
 }
 
 
@@ -279,3 +295,4 @@ void ModuleNetworkingClient::onDisconnect()
 
 	App->modRender->cameraPosition = {};
 }
+

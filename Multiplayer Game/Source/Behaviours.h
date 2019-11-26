@@ -53,7 +53,8 @@ struct Player : public Behaviour
 	float shotingDelay = 0.5f;
 	float lastShotTime = 0.0f;
 
-	vec2 shot_offset = { 10.0f,30.0f };
+	vec2 bullet_offset = { 10.0f, 30.0f };
+	vec2 shot_offset = { 10.0f,35.0f };
 
 	bool isDown = false;
 	float rezTime = 3.0f;
@@ -68,6 +69,9 @@ struct Player : public Behaviour
 	int health = 0;
 
 	GameObject* rez = nullptr;
+
+	vec2 laser_offset = { 10.0f, 500.0f };
+	GameObject* laser = nullptr;
 
 	void start() override
 	{
@@ -108,6 +112,18 @@ struct Player : public Behaviour
 			NetworkCommunication(DESTROY, rez);
 			rez = nullptr;
 		}
+		if (laser != nullptr)
+		{
+			updateLaser();
+		}
+	}
+
+	void updateLaser()
+	{
+		laser->angle = gameObject->angle;
+		vec2 forward = vec2FromDegrees(gameObject->angle);
+		vec2 right = { -forward.y, forward.x };
+		laser->position = gameObject->position + laser_offset.x*right + laser_offset.y*forward;
 	}
 
 	void onInput(const InputController &input) override
@@ -135,8 +151,9 @@ struct Player : public Behaviour
 			{
 				lastShotTime = Time.time;
 
-				GameObject* laser = App->modNetServer->spawnBullet(gameObject, shot_offset);
+				GameObject* laser = App->modNetServer->spawnBullet(gameObject, bullet_offset);
 				laser->tag = gameObject->tag;
+				App->modNetServer->spawnShot(gameObject, shot_offset);
 			}
 		}
 	}
@@ -179,7 +196,7 @@ struct Player : public Behaviour
 	}
 };
 
-struct Laser : public Behaviour
+struct Bullet : public Behaviour
 {
 	float secondsSinceCreation = 0.0f;
 
@@ -194,6 +211,21 @@ struct Laser : public Behaviour
 
 		const float lifetimeSeconds = 2.0f;
 		if (secondsSinceCreation > lifetimeSeconds) NetworkCommunication(DESTROY, gameObject);
+	}
+};
+
+struct Shot : public Behaviour
+{
+	float aliveDuration = 0.1f;
+	float timeAlive = 0.0f;
+
+	void update() override
+	{
+		timeAlive += Time.deltaTime;
+		if (timeAlive >= aliveDuration)
+		{
+			NetworkCommunication(DESTROY, gameObject);
+		}
 	}
 };
 
@@ -276,7 +308,7 @@ struct Blood : public Behaviour
 	float despawnTime = 3.0f;
 	float timeAlive = 0.0f;
 
-	void update()
+	void update() override
 	{
 		timeAlive += Time.deltaTime;
 		if (timeAlive >= aliveDuration)

@@ -23,6 +23,7 @@ public:
 	Texture *blood			= nullptr;
 	Texture *bullet			= nullptr;
 	Texture *shot			= nullptr;
+	Texture *laser			= nullptr;
 	
 	Texture *explosion1		= nullptr;
 	Texture *explosion2		= nullptr;

@@ -37,9 +37,11 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 
 			if (go->isPlayer)
 			{
-				go->behaviour = new Player();
-				go->behaviour->gameObject = go;
-				go->behaviour->isServer = false;
+				Player* script = new Player();
+				script->gameObject = go;
+				script->isServer = false;
+				script->laser = App->modNetClient->spawnLaser(go);
+				go->behaviour = script;
 			}
 
 			go->final_position = go->position;

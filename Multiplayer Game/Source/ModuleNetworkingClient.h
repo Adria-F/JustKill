@@ -14,6 +14,8 @@ public:
 
 	void setPlayerInfo(const char *playerName, uint8 spaceshipType);
 
+	GameObject* spawnLaser(GameObject* player);
+
 	// Replication Delay
 	float replicationPing = 0.0f;
 

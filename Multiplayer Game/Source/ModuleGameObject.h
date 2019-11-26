@@ -76,8 +76,6 @@ public:
 
 	static void Destroy(GameObject * gameObject);
 
-
-
 	GameObject gameObjects[MAX_GAME_OBJECTS] = {};
 
 	bool interpolateEntities = false;

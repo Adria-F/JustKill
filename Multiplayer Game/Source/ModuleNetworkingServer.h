@@ -79,6 +79,10 @@ public:
 
 	GameObject * spawnBullet(GameObject *parent, vec2 offset);
 
+	GameObject * spawnShot(GameObject* parent, vec2 offset);
+
+	GameObject* spawnRezUI(vec2 position);
+
 	// NOTE(jesus): Here go spawn methods for each type of network objects
 
 	void ZombieSpawner();
@@ -88,7 +92,7 @@ public:
 	GameObject* spawnZombie(vec2 position);
 	GameObject* spawnExplosion(GameObject* zombie);
 	GameObject* spawnBlood(vec2 position, float angle);
-	GameObject* spawnRezUI(vec2 position);
+	
 	float zombieSpawnRatio = 2.0;
 	float timeSinceLastZombieSpawned = 0;
 	bool isSpawnerEnabled = true;

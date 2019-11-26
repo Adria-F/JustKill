@@ -123,10 +123,15 @@ GameObject * ModuleGameObject::Instantiate()
 void ModuleGameObject::Destroy(GameObject * gameObject)
 {
 	ASSERT(gameObject->networkId == 0); // NOTE(jesus): If it has a network identity, it must be destroyed by the Networking module first
-	
+
 	if (gameObject->animation)
 	{
 		//TODO(Adrià) Should delete animation instance
+	}
+
+	if (gameObject->isPlayer)
+	{
+		Destroy(((Player*)gameObject->behaviour)->laser);
 	}
 
 	gameObject->state = GameObject::DESTROYING;
