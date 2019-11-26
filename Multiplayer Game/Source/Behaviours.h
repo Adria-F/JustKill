@@ -131,12 +131,11 @@ struct Player : public Behaviour
 			gameObject->angle = degreesFromRadians(atan2(mouse.y, mouse.x)) + 90;
 			NetworkCommunication(UPDATE_POSITION, gameObject);
 
-			if (mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
+			if (isServer && mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
 			{
 				lastShotTime = Time.time;
 
 				GameObject* laser = App->modNetServer->spawnBullet(gameObject, shot_offset);
-				laser->behaviour->isServer = false;
 				laser->tag = gameObject->tag;
 			}
 		}
