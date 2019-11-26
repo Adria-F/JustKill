@@ -21,6 +21,8 @@ void GameObject::Interpolate()
 	{
 		factor = interpolationSecondsElapsed / App->modNetClient->replicationPing;
 	}
+	if (factor > 1.0f)
+		factor = 1.0f;
 
 	position = initial_position + (final_position - initial_position)*factor;
 	angle = Slerp(initial_angle, final_angle, factor);
