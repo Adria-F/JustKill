@@ -65,11 +65,10 @@ private:
 
 	ReplicationManagerClient replicationManager;
 
-	bool clientPrediction = false;
+	bool clientPrediction = true;
 
 
 	// Input ///////////
-
 	static const int MAX_INPUT_DATA_SIMULTANEOUS_PACKETS = 64;
 
 	// Queue of input data

@@ -7,6 +7,13 @@ struct Collider
 	bool isTrigger = false;
 };
 
+struct CollisionData
+{
+	Collider *collider;   // The collider component itself
+	Behaviour *behaviour; // The callbacks
+	vec2 p1, p2, p3, p4;  // Transformed bounding box points
+};
+
 class ModuleCollision : public Module
 {
 public:
@@ -30,9 +37,10 @@ private:
 
 	bool postUpdate() override;
 
+	uint32    collidersCount = 0;
 	Collider  colliders[MAX_COLLIDERS];
-	Collider *activeColliders[MAX_COLLIDERS];
-	uint32    activeCollidersCount = 0;
+
+	CollisionData activeColliders[MAX_COLLIDERS];
 
 	friend class ModuleRender;
 };

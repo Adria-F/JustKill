@@ -15,6 +15,7 @@ bool DeliveryManager::processSequenceNumber(const InputMemoryStream & packet)
 {
 	uint32 SNRecieved;
 	packet >> SNRecieved;
+
 	if (SNRecieved >= SNExpected)
 	{
 		SNExpected = SNRecieved + 1;

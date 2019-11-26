@@ -1,4 +1,4 @@
-#include "Networks.h"
+#include "ModuleCollision.h"
 
 
 static bool collisionTestOverSeparatingAxis(
@@ -19,63 +19,43 @@ static bool collisionTestOverSeparatingAxis(
 	float maxb = max(pb1, max(pb2, max(pb3, pb4)));
 	float minb = min(pb1, min(pb2, min(pb3, pb4)));
 	bool separated = maxa < minb || mina > maxb;
+
 	return !separated;
 }
 
-static bool collisionTest(Collider &c1, Collider &c2)
+static bool collisionTest(CollisionData &c1, CollisionData &c2)
 {
-	GameObject *a = c1.gameObject;
-	GameObject *b = c2.gameObject;
 
-	vec2 asize = isZero(a->size) ? (a->texture ? a->texture->size : vec2{ 100.0f, 100.0f }) : a->size;
-	vec2 bsize = isZero(b->size) ? (b->texture ? b->texture->size : vec2{ 100.0f, 100.0f }) : b->size;
+	bool areColliding = false;
 
-	mat4 aWorldMatrix =
-		translation(a->position) *
-		rotationZ(radiansFromDegrees(a->angle)) *
-		scaling(asize) *
-		translation(vec2{ 0.5f, 0.5f } -a->pivot);
-
-	mat4 bWorldMatrix =
-		translation(b->position) *
-		rotationZ(radiansFromDegrees(b->angle)) *
-		scaling(bsize) *
-		translation(vec2{ 0.5f, 0.5f } -b->pivot);
-
-	vec2 pa1 = vec2_cast(aWorldMatrix * vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
-	vec2 pa2 = vec2_cast(aWorldMatrix * vec4{  0.5f, -0.5f, 0.0f, 1.0f });
-	vec2 pa3 = vec2_cast(aWorldMatrix * vec4{  0.5f,  0.5f, 0.0f, 1.0f });
-	vec2 pa4 = vec2_cast(aWorldMatrix * vec4{ -0.5f,  0.5f, 0.0f, 1.0f });
-	vec2 pb1 = vec2_cast(bWorldMatrix * vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
-	vec2 pb2 = vec2_cast(bWorldMatrix * vec4{  0.5f, -0.5f, 0.0f, 1.0f });
-	vec2 pb3 = vec2_cast(bWorldMatrix * vec4{  0.5f,  0.5f, 0.0f, 1.0f });
-	vec2 pb4 = vec2_cast(bWorldMatrix * vec4{ -0.5f,  0.5f, 0.0f, 1.0f });
-
-	vec2 axes[] = {	pa1 - pa2, pa2 - pa3, pb1 - pb2, pb2 - pb3 };
+	vec2 axes[] = { c1.p1 - c1.p2, c1.p2 - c1.p3, c2.p1 - c2.p2, c2.p2 - c2.p3 };
 
 	for (vec2 axis : axes)
 	{
-		if (!collisionTestOverSeparatingAxis(pa1, pa2, pa3, pa4, pb1, pb2, pb3, pb4, axis))
+		areColliding = collisionTestOverSeparatingAxis(c1.p1, c1.p2, c1.p3, c1.p4, c2.p1, c2.p2, c2.p3, c2.p4, axis);
+
+		if (!areColliding)
 		{
-			return false;
+			break;
 		}
 	}
 
-	return true;
+	return areColliding;
 }
-
 
 Collider * ModuleCollision::addCollider(ColliderType type, GameObject * parent)
 {
 	ASSERT(type != ColliderType::None);
-
+	//ASSERT(parent->sprite != nullptr);
+	ASSERT(parent->texture != nullptr);
+	
 	for (Collider &collider : colliders)
 	{
 		if (collider.type == ColliderType::None)
 		{
 			collider.type = type;
 			collider.gameObject = parent;
-			activeCollidersCount++;
+			collidersCount++;
 			return &collider;
 		}
 	}
@@ -90,58 +70,83 @@ void ModuleCollision::removeCollider(Collider *collider)
 	if (collider->type != ColliderType::None)
 	{
 		collider->type = ColliderType::None;
+		collider->gameObject->collider = nullptr;
 		collider->gameObject = nullptr;
-		activeCollidersCount--;
+		collidersCount--;
 	}
 }
 
 bool ModuleCollision::update()
 {
-	// Pack colliders in activeColliders without empty cells
-	uint32 activeColliderIndex = 0;
-	for (int i = 0; i < MAX_COLLIDERS && activeColliderIndex < activeCollidersCount; ++i)
+	// Pack colliders in activeColliders contiguously
+	uint32 activeCollidersCount = 0;
+	for (unsigned int i = 0; i < MAX_COLLIDERS && activeCollidersCount < collidersCount; ++i)
 	{
 		Collider *collider = &colliders[i];
 
 		if (collider->type != ColliderType::None)
 		{
-			activeColliders[activeColliderIndex++] = collider;
+			// Handle game object destruction
+			GameObject *go = collider->gameObject;
+			ASSERT(go != nullptr);
+
+			if (go->state == GameObject::DESTROYING)
+			{
+				App->modCollision->removeCollider(collider);
+				continue;
+			}
+
+			if (go->state == GameObject::UPDATING)
+			{
+				// Precompute collision data and store it into activeColliders
+				Texture *texture = go->texture;
+				ASSERT(texture != nullptr);
+
+				vec2 size = isZero(go->size) ? (texture ? texture->size : vec2{ 100.0f, 100.0f }) : go->size;
+
+				mat4 aWorldMatrix =
+					translation(go->position) *
+					rotationZ(radiansFromDegrees(go->angle)) *
+					scaling(size) *
+					translation(vec2{ 0.5f, 0.5f } -go->pivot);
+
+				activeColliders[activeCollidersCount].collider = collider;
+				activeColliders[activeCollidersCount].p1 = vec2_cast(aWorldMatrix * vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
+				activeColliders[activeCollidersCount].p2 = vec2_cast(aWorldMatrix * vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
+				activeColliders[activeCollidersCount].p3 = vec2_cast(aWorldMatrix * vec4{ 0.5f,  0.5f, 0.0f, 1.0f });
+				activeColliders[activeCollidersCount].p4 = vec2_cast(aWorldMatrix * vec4{ -0.5f,  0.5f, 0.0f, 1.0f });
+				activeColliders[activeCollidersCount].behaviour = (collider->isTrigger) ? collider->gameObject->behaviour : nullptr;
+				activeCollidersCount++;
+			}
 		}
 	}
 
 	// Traverse all active colliders
- 	for (uint32 i = 0; i < activeCollidersCount; ++i)
+	for (uint32 i = 0; i < activeCollidersCount; ++i)
 	{
-		Collider &c1 = *activeColliders[i];
+		CollisionData &c1 = activeColliders[i];
 
-		if (c1.type != ColliderType::None)
+		for (uint32 j = i + 1; j < activeCollidersCount; ++j)
 		{
-			for (uint32 j = i + 1; j < activeCollidersCount; ++j)
-			{
-				Collider &c2 = *activeColliders[j];
+			CollisionData &c2 = activeColliders[j];
 
-				if (c2.type != ColliderType::None)
+			if ((c1.behaviour != nullptr) ||
+				(c2.behaviour != nullptr))
+			{
+				if (collisionTest(c1, c2))
 				{
-					if ((c1.isTrigger && c1.gameObject->behaviour != nullptr) ||
-						(c2.isTrigger && c2.gameObject->behaviour != nullptr))
+					if (c1.behaviour)
 					{
-						if (collisionTest(c1, c2))
-						{
-							if (c1.isTrigger)
-							{
-								c1.gameObject->behaviour->onCollisionTriggered(c1, c2);
-							}
-							if (c2.isTrigger)
-							{
-								c2.gameObject->behaviour->onCollisionTriggered(c2, c1);
-							}
-						}
+						c1.behaviour->onCollisionTriggered(*c1.collider, *c2.collider);
+					}
+					if (c2.behaviour)
+					{
+						c2.behaviour->onCollisionTriggered(*c2.collider, *c1.collider);
 					}
 				}
 			}
 		}
 	}
-
 	return true;
 }
 

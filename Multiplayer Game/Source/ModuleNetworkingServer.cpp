@@ -37,7 +37,7 @@ void ModuleNetworkingServer::onStart()
 	}
 
 	state = ServerState::Listening;
-	App->modGameObject->interpolateEntities = false;
+	App->modGameObject->interpolateEntities = false;	
 
 	secondsSinceLastPing = 0.0f;
 }
@@ -147,6 +147,8 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 					// TODO(jesus): Notify the new client proxy's replication manager about the creation of this game object
 					proxy->replicationManager.create(gameObject->networkId);
 				}
+
+				isPlayerConneted = true;
 
 				LOG("Message received: hello - from player %s", playerName.c_str());
 			}
@@ -459,18 +461,35 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 
 void ModuleNetworkingServer::ZombieSpawner()
 {
-	float safetyRadius = 175.0f; //Area from the center where zombies cannot spawn
-	float maxDistance = 850.0f; //Max distance where the zombies can spawn
+	if (isPlayerConneted && isSpawnerEnabled)
+	{
+		float safetyRadius = 175.0f; //Area from the center where zombies cannot spawn
+		float maxDistance = 850.0f; //Max distance where the zombies can spawn
+		float increasingSpawnRatio = 0.5f;
+		static float finalSpawnRatio = 5.0f;
 
-	timeSinceLastZombieSpawned += Time.deltaTime;
-	if (timeSinceLastZombieSpawned > zombieSpawnRatio && isSpawnerEnabled)
-	{		
-		vec2 randomDirection = vec2{RandomFloat(-1.0f,1.0f),RandomFloat(-1.0f,1.0f)};
-		float distance = RandomFloat(safetyRadius, maxDistance);
+		timeSinceLastZombieSpawned += Time.deltaTime;
+		if (finalSpawnRatio > 1.0)
+		{
+			finalSpawnRatio = zombieSpawnRatio - increasingSpawnRatio;
+		}
+		else
+		{
+			finalSpawnRatio = zombieSpawnRatio;
+		}
+		
+		if (timeSinceLastZombieSpawned > zombieSpawnRatio)
+		{
 
-		spawnZombie(normalize(randomDirection)*distance);
-		timeSinceLastZombieSpawned = 0.0f;
+			vec2 randomDirection = vec2{ RandomFloat(-1.0f,1.0f),RandomFloat(-1.0f,1.0f) };
+			float distance = RandomFloat(safetyRadius, maxDistance);
+
+			spawnZombie(normalize(randomDirection)*distance);
+			timeSinceLastZombieSpawned = 0.0f;
+			zombieSpawnRatio = finalSpawnRatio;
+		}
 	}
+
 }
 
 float ModuleNetworkingServer::RandomFloat(float min, float max)
