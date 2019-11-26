@@ -28,6 +28,10 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			packet >> go->size.y;
 			packet >> go->angle;
 			packet >> go->order;
+			packet >> go->color.r;
+			packet >> go->color.g;
+			packet >> go->color.b;
+			packet >> go->color.a;
 			if (networkId == clientNetworkId)
 				go->isPlayer = true;
 
@@ -93,17 +97,23 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			int32 UID;
 			packet >> UID;
 			go->texture = App->modTextures->getTexturebyUID(UID);
-			if (go->isPlayer && UID == App->modResources->dead->UID)
+			if (go->isPlayer && UID == App->modResources->dead->UID) //To update player dead/alive texture
 			{
 				go->texture = App->modResources->playerDead;
+				((Player*)go->behaviour)->isDown = true;
 			}
 			else if (go->isPlayer && UID == App->modResources->robot->UID)
 			{
 				go->texture = App->modResources->playerRobot;
+				((Player*)go->behaviour)->isDown = false;
 			}
 			packet >> go->size.x;
 			packet >> go->size.y;
 			packet >> go->order;
+			packet >> go->color.r;
+			packet >> go->color.g;
+			packet >> go->color.b;
+			packet >> go->color.a;
 		}
 		else if (action == ReplicationAction::Update_Animation)
 		{

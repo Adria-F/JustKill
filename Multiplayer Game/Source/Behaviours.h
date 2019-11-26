@@ -257,3 +257,24 @@ struct Explosion : public Behaviour
 		}
 	}
 };
+
+struct Blood : public Behaviour
+{
+	float aliveDuration = 30.0f;
+	float despawnTime = 3.0f;
+	float timeAlive = 0.0f;
+
+	void update()
+	{
+		timeAlive += Time.deltaTime;
+		if (timeAlive >= aliveDuration)
+		{
+			gameObject->color.a = 1 - ((timeAlive - aliveDuration) / despawnTime);
+			NetworkCommunication(UPDATE_TEXTURE, gameObject);
+			if (timeAlive >= aliveDuration + despawnTime)
+			{
+				NetworkCommunication(DESTROY, gameObject);
+			}
+		}
+	}
+};

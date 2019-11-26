@@ -482,7 +482,7 @@ void ModuleNetworkingServer::ZombieSpawner()
 		{
 
 			vec2 randomDirection = vec2{ RandomFloat(-1.0f,1.0f),RandomFloat(-1.0f,1.0f) };
-			float distance = RandomFloat(safetyRadius, maxDistance);
+			float distance = 1200.0f;
 
 			spawnZombie(normalize(randomDirection)*distance);
 			timeSinceLastZombieSpawned = 0.0f;
@@ -562,7 +562,7 @@ GameObject * ModuleNetworkingServer::spawnBlood(vec2 position, float angle)
 	object->texture = App->modResources->blood;
 	object->order = 0;
 
-	object->behaviour = new Explosion();
+	object->behaviour = new Blood();
 	object->behaviour->gameObject = object;
 
 	App->modLinkingContext->registerNetworkGameObject(object);
