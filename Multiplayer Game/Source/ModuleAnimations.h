@@ -8,6 +8,7 @@ public:
 	std::string tag;
 	float spriteDuration = 0.5f;
 	std::vector<Texture**> sprites;
+	bool loop = false;
 
 private:
 

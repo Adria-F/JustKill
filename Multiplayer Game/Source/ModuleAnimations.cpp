@@ -67,13 +67,16 @@ void Animation::Start()
 
 void Animation::Update()
 {
-	if (Time.time - lastSpriteTime >= spriteDuration)
+	if (currentSprite < sprites.size())
 	{
-		lastSpriteTime = Time.time;
-		currentSprite++;
-		if (currentSprite == sprites.size())
+		if (Time.time - lastSpriteTime >= spriteDuration)
 		{
-			currentSprite = 0;
+			lastSpriteTime = Time.time;
+			currentSprite++;
+			if (loop && currentSprite == sprites.size())
+			{
+				currentSprite = 0;
+			}
 		}
 	}
 }
