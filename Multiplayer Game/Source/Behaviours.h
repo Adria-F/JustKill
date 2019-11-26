@@ -200,9 +200,20 @@ struct Laser : public Behaviour
 struct Zombie : public Behaviour
 {
 	float movementSpeed = 100.0f;
+	vec2 forcedVelocity = { 0.0f, 0.0f };
 
 	void update() override
 	{
+		float distance = length(gameObject->position);
+		if (distance < 200.0f)
+		{
+			forcedVelocity = normalize(gameObject->position)* (2-(distance/175.0f));
+		}
+		else
+		{
+			forcedVelocity = { 0.0f,0.0f };
+		}
+
 		float shortestDistance = 15000000.0f;
 		GameObject* closest = nullptr;
 		std::vector<GameObject*> players = getPlayers();
@@ -222,7 +233,8 @@ struct Zombie : public Behaviour
 		if (closest != nullptr)
 		{
 			vec2 direction = closest->position - gameObject->position;
-			gameObject->position += normalize(direction)*movementSpeed*Time.deltaTime;
+			direction = normalize(direction) + forcedVelocity;
+			gameObject->position += direction*movementSpeed*Time.deltaTime;
 			gameObject->angle = degreesFromRadians(atan2(direction.y, direction.x)) + 90;
 			NetworkCommunication(UPDATE_POSITION, gameObject);
 		}
