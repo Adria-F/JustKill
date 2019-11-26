@@ -65,7 +65,7 @@ private:
 
 	ReplicationManagerClient replicationManager;
 
-	bool clientPrediction = false;
+	bool clientPrediction = true;
 
 
 	// Input ///////////

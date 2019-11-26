@@ -89,9 +89,10 @@ public:
 	GameObject* spawnExplosion(GameObject* zombie);
 	GameObject* spawnBlood(vec2 position, float angle);
 	GameObject* spawnRezUI(vec2 position);
-	float zombieSpawnRatio = 5.0f;
+	float zombieSpawnRatio = 2.0;
 	float timeSinceLastZombieSpawned = 0;
-	bool isSpawnerEnabled = false;
+	bool isSpawnerEnabled = true;
+	bool isPlayerConneted = false;
 
 	//Render Order
 	// Layer -1 - MAP

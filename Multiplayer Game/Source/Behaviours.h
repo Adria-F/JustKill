@@ -166,7 +166,7 @@ struct Laser : public Behaviour
 
 struct Zombie : public Behaviour
 {
-	float movementSpeed = 50.0f;
+	float movementSpeed = 100.0f;
 
 	void update() override
 	{
