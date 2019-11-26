@@ -11,46 +11,51 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 		packet >> action;
 		if (action == ReplicationAction::Create)
 		{
-			if (App->modLinkingContext->getNetworkGameObject(networkId) == nullptr)
+			GameObject* go = nullptr;
+			go = App->modLinkingContext->getNetworkGameObject(networkId, true);
+			if (go != nullptr)
 			{
-				GameObject* go = Instantiate();
-				App->modLinkingContext->registerNetworkGameObjectWithNetworkId(go, networkId);
+				App->modLinkingContext->unregisterNetworkGameObject(go);
+				Destroy(go);
+			}
 
-				packet >> go->position.x;
-				packet >> go->position.y;
-				packet >> go->size.x;
-				packet >> go->size.y;
-				packet >> go->angle;
-				packet >> go->order;
-				if (networkId == clientNetworkId)
-					go->isPlayer = true;
+			go = Instantiate();
+			App->modLinkingContext->registerNetworkGameObjectWithNetworkId(go, networkId);
 
-				go->final_position = go->position;
-				go->initial_position = go->position;
-				go->final_angle = go->angle;
-				go->initial_angle = go->angle;
-				
-				bool haveAnimation = false;
-				packet >> haveAnimation;
+			packet >> go->position.x;
+			packet >> go->position.y;
+			packet >> go->size.x;
+			packet >> go->size.y;
+			packet >> go->angle;
+			packet >> go->order;
+			if (networkId == clientNetworkId)
+				go->isPlayer = true;
 
-				if (haveAnimation)
+			go->final_position = go->position;
+			go->initial_position = go->position;
+			go->final_angle = go->angle;
+			go->initial_angle = go->angle;
+
+			bool haveAnimation = false;
+			packet >> haveAnimation;
+
+			if (haveAnimation)
+			{
+				std::string tag;
+				packet >> tag;
+				go->animation = App->modAnimations->useAnimation(tag.c_str());
+			}
+			else
+			{
+				uint32 UID;
+				packet >> UID;
+				if (go->isPlayer)
 				{
-					std::string tag;
-					packet >> tag;
-					go->animation = App->modAnimations->useAnimation(tag.c_str());
+					go->texture = App->modResources->playerRobot;
 				}
 				else
-				{					
-					uint32 UID;
-					packet >> UID;
-					if (go->isPlayer)
-					{
-						go->texture = App->modResources->playerRobot;
-					}
-					else
-					{
-						go->texture = App->modTextures->getTexturebyUID(UID);
-					}
+				{
+					go->texture = App->modTextures->getTexturebyUID(UID);
 				}
 			}
 		}
@@ -67,7 +72,7 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			{
 				go->newReplicationState(serverposition, angle);
 
-				if (!App->modGameObject->interpolateEntities /*|| go->isPlayer*/)
+				if (!App->modGameObject->interpolateEntities)
 				{
 					go->position = serverposition;
 					go->angle = angle;

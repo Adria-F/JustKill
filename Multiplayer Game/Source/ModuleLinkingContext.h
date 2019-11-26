@@ -8,7 +8,7 @@ public:
 
 	void registerNetworkGameObjectWithNetworkId(GameObject *gameObject, uint32 networkId);
 
-	GameObject *getNetworkGameObject(uint32 networkId);
+	GameObject *getNetworkGameObject(uint32 networkId, bool ignoreSameID = false);
 
 	void getNetworkGameObjects(GameObject *gameObjects[MAX_NETWORK_OBJECTS], uint16 *count);
 
