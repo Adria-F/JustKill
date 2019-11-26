@@ -31,6 +31,13 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			if (networkId == clientNetworkId)
 				go->isPlayer = true;
 
+			if (go->isPlayer)
+			{
+				go->behaviour = new Player();
+				go->behaviour->gameObject = go;
+				go->behaviour->isServer = false;
+			}
+
 			go->final_position = go->position;
 			go->initial_position = go->position;
 			go->final_angle = go->angle;

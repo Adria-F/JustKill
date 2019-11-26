@@ -3,6 +3,7 @@
 struct Behaviour
 {
 	GameObject *gameObject = nullptr;
+	bool isServer = true;
 
 	virtual void start() { }
 
@@ -13,7 +14,39 @@ struct Behaviour
 	virtual void onMouse(const MouseController& mouse) { }
 
 	virtual void onCollisionTriggered(Collider &c1, Collider &c2) { }
+
+	enum networkMessageType
+	{
+		UPDATE_POSITION,
+		UPDATE_TEXTURE,
+		UPDATE_ANIMATION,
+		DESTROY
+	};
+
+	void NetworkCommunication(networkMessageType type, GameObject* object);
 };
+
+void Behaviour::NetworkCommunication(networkMessageType type, GameObject* object)
+{
+	if (isServer)
+	{
+		switch (type)
+		{
+		case Behaviour::UPDATE_POSITION:
+			NetworkUpdate(object, ReplicationAction::Update_Position);
+			break;
+		case Behaviour::UPDATE_TEXTURE:
+			NetworkUpdate(object, ReplicationAction::Update_Texture);
+			break;
+		case Behaviour::UPDATE_ANIMATION:
+			NetworkUpdate(object, ReplicationAction::Update_Animation);
+			break;
+		case Behaviour::DESTROY:
+			NetworkDestroy(object);
+			break;
+		}
+	}
+}
 
 struct Player : public Behaviour
 {
@@ -47,14 +80,14 @@ struct Player : public Behaviour
 		if (rez != nullptr)
 		{
 			rez->animation->spriteDuration = (rezTime / (rez->animation->sprites.size()-1)) / detectedPlayers;
-			NetworkUpdate(rez, ReplicationAction::Update_Animation);
+			NetworkCommunication(UPDATE_ANIMATION, rez);
 		}
 		if (isDown && detectedPlayers == 0)
 		{
 			rezDuration = 0.0f;
 			if (rez != nullptr)
 			{
-				NetworkDestroy(rez);
+				NetworkCommunication(DESTROY, rez);
 				rez = nullptr;
 			}
 		}
@@ -71,8 +104,8 @@ struct Player : public Behaviour
 			gameObject->texture = App->modResources->robot;
 			gameObject->size = { 43,49 };
 			gameObject->order = 3;
-			NetworkUpdate(gameObject, ReplicationAction::Update_Texture);
-			NetworkDestroy(rez);
+			NetworkCommunication(UPDATE_TEXTURE, gameObject);
+			NetworkCommunication(DESTROY, rez);
 			rez = nullptr;
 		}
 	}
@@ -86,7 +119,7 @@ struct Player : public Behaviour
 				const float advanceSpeed = 200.0f;
 				gameObject->position += vec2{ 1,0 } *input.horizontalAxis * advanceSpeed * Time.deltaTime;
 				gameObject->position += vec2{ 0,-1 } *input.verticalAxis * advanceSpeed * Time.deltaTime;
-				NetworkUpdate(gameObject, ReplicationAction::Update_Position);
+				NetworkCommunication(UPDATE_POSITION, gameObject);
 			}
 		}
 	}
@@ -96,13 +129,14 @@ struct Player : public Behaviour
 		if (!isDown)
 		{
 			gameObject->angle = degreesFromRadians(atan2(mouse.y, mouse.x)) + 90;
-			NetworkUpdate(gameObject, ReplicationAction::Update_Position);
+			NetworkCommunication(UPDATE_POSITION, gameObject);
 
 			if (mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
 			{
 				lastShotTime = Time.time;
 
 				GameObject* laser = App->modNetServer->spawnBullet(gameObject, shot_offset);
+				laser->behaviour->isServer = false;
 				laser->tag = gameObject->tag;
 			}
 		}
@@ -126,7 +160,7 @@ struct Player : public Behaviour
 						gameObject->texture = App->modResources->dead;
 						gameObject->size = { 66,85 };
 						gameObject->order = 1;
-						NetworkUpdate(gameObject, ReplicationAction::Update_Texture);
+						NetworkCommunication(UPDATE_TEXTURE, gameObject);
 					}
 				}
 			}
@@ -157,10 +191,10 @@ struct Laser : public Behaviour
 
 		secondsSinceCreation += Time.deltaTime;
 
-		NetworkUpdate(gameObject, ReplicationAction::Update_Position);
+		NetworkCommunication(UPDATE_POSITION, gameObject);
 
 		const float lifetimeSeconds = 2.0f;
-		if (secondsSinceCreation > lifetimeSeconds) NetworkDestroy(gameObject);
+		if (secondsSinceCreation > lifetimeSeconds) NetworkCommunication(DESTROY, gameObject);
 	}
 };
 
@@ -191,7 +225,7 @@ struct Zombie : public Behaviour
 			vec2 direction = closest->position - gameObject->position;
 			gameObject->position += normalize(direction)*movementSpeed*Time.deltaTime;
 			gameObject->angle = degreesFromRadians(atan2(direction.y, direction.x)) + 90;
-			NetworkUpdate(gameObject, ReplicationAction::Update_Position);
+			NetworkCommunication(UPDATE_POSITION, gameObject);
 		}
 	}
 
@@ -199,7 +233,7 @@ struct Zombie : public Behaviour
 	{
 		if (c2.type == ColliderType::Bullet && c2.gameObject->tag != gameObject->tag)
 		{
-			NetworkDestroy(c2.gameObject); // Destroy the bullet
+			NetworkCommunication(DESTROY, c2.gameObject); // Destroy the bullet
 			GameObject* explosion = App->modNetServer->spawnExplosion(gameObject);
 		}
 	}
@@ -213,14 +247,14 @@ struct Explosion : public Behaviour
 	{
 		if (zombie && gameObject->animation && gameObject->animation->getCurrentSpriteIndex() >= 2 && zombie->state == GameObject::State::UPDATING)
 		{
-			NetworkDestroy(zombie);
+			NetworkCommunication(DESTROY, zombie);
 			App->modNetServer->spawnBlood(zombie->position, zombie->angle);
 			zombie = nullptr;
 		}
 
 		if (gameObject->animation && gameObject->animation->isFinished())
 		{
-			NetworkDestroy(gameObject);
+			NetworkCommunication(DESTROY, gameObject);
 		}
 	}
 };

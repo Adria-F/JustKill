@@ -162,8 +162,6 @@ void ModuleNetworkingClient::onUpdate()
 		stream << playerName;
 		stream << spaceshipType;
 
-
-
 		sendPacket(stream, serverAddress);
 
 		state = ClientState::WaitingWelcome;
@@ -177,6 +175,17 @@ void ModuleNetworkingClient::onUpdate()
 		secondsSinceLastMouseDelivery += Time.deltaTime;
 		secondsSinceLastPing += Time.deltaTime;
 
+		GameObject* playerClientGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
+		if (clientPrediction && playerClientGameObject)
+		{
+			MouseController mouse;
+			mouse.x = Mouse.x - Window.width / 2;
+			mouse.y = Mouse.y - Window.height / 2;
+			mouse.buttons[0] = Mouse.buttons[0];
+			playerClientGameObject->behaviour->onInput(Input);
+			playerClientGameObject->behaviour->onMouse(mouse);
+		}
+
 		if (inputDataBack - inputDataFront < ArrayCount(inputData))
 		{
 			uint32 currentInputData = inputDataBack++;
@@ -189,31 +198,6 @@ void ModuleNetworkingClient::onUpdate()
 			inputPacketData.mouseY = Mouse.y - Window.height / 2;
 			inputPacketData.leftButton = Mouse.buttons[0];
 			
-			//Client Side Prediction WORK IN PROGRESS!			
-			if (clientPrediction)
-			{
-				InputController finalInput = inputControllerFromInputPacketData(inputPacketData, Input);
-				GameObject *playerClientGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
-				if (playerClientGameObject != nullptr)
-				{
-					//Calculate Position
-					if (finalInput.horizontalAxis != 0.0f || finalInput.verticalAxis != 0.0f)
-					{
-						const float advanceSpeed = 200.0f;
-						playerClientGameObject->position += vec2{ 1,0 } *finalInput.horizontalAxis * advanceSpeed * Time.deltaTime;
-						playerClientGameObject->position += vec2{ 0,-1 } *finalInput.verticalAxis * advanceSpeed * Time.deltaTime;
-					}
-
-					//Calculate Angle
-					float shotingDelay = 0.5f;
-					float lastShotTime = 0.0f;
-					vec2 shot_offset = { 10.0f,30.0f };
-					vec2 mouse_final_pos = vec2{ (float)Mouse.x - Window.width / 2 , (float)Mouse.y - Window.height / 2 };
-					playerClientGameObject->angle = degreesFromRadians(atan2(mouse_final_pos.y, mouse_final_pos.x)) + 90;
-				}
-			}
-
-
 			// Create packet (if there's input and the input delivery interval exceeded)
 			if (secondsSinceLastInputDelivery > inputDeliveryIntervalSeconds)
 			{
