@@ -35,7 +35,7 @@
 #define MAX_GAME_OBJECTS                                4096
 #define MAX_COLLIDERS                       MAX_GAME_OBJECTS
 #define MAX_CLIENTS                                       32
-#define MAX_NETWORK_OBJECTS                              256
+#define MAX_NETWORK_OBJECTS                              768
 
 #define SCENE_TRANSITION_TIME_SECONDS                   1.0f
 #define DISCONNECT_TIMEOUT_SECONDS                      5.0f

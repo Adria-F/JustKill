@@ -69,7 +69,6 @@ private:
 
 
 	// Input ///////////
-
 	static const int MAX_INPUT_DATA_SIMULTANEOUS_PACKETS = 64;
 
 	// Queue of input data

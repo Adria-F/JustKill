@@ -504,9 +504,9 @@ void ModuleRender::renderScene()
 	// Render colliders
 	if (mustRenderColliders)
 	{
-		for (uint32 i = 0; i < App->modCollision->activeCollidersCount; ++i)
+		for (uint32 i = 0; i < App->modCollision->collidersCount; ++i) 
 		{
-			Collider *collider = App->modCollision->activeColliders[i];
+			Collider *collider = App->modCollision->activeColliders[i].collider;
 			if (collider == nullptr) continue;
 
 			if (collider->type != ColliderType::None && collider->gameObject != nullptr)
