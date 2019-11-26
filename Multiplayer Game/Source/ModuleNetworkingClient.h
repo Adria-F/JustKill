@@ -73,8 +73,8 @@ private:
 
 	// Queue of input data
 	InputPacketData inputData[MAX_INPUT_DATA_SIMULTANEOUS_PACKETS];
-	uint32 inputDataFront = 0;
-	uint32 inputDataBack = 0;
+	uint32 inputDataFront = 0; // list.begin()
+	uint32 inputDataBack = 0; // list.end()
 
 	float inputDeliveryIntervalSeconds = 0.05f;
 	float secondsSinceLastInputDelivery = 0.0f;
