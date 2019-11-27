@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+Multiplayer Game/Source/Networks.vcxproj
+Multiplayer Game/Game/imgui.ini
