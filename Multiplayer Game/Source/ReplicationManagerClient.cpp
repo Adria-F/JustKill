@@ -77,19 +77,34 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 
 			vec2 serverposition;
-			float angle;
+			float serverangle;
+			uint32 lastInputSN;
 			packet >> serverposition.x;
 			packet >> serverposition.y;
-			packet >> angle;
+			packet >> serverangle;
+			packet >> lastInputSN;
 			if (go != nullptr)
 			{
-				go->newReplicationState(serverposition, angle);
+				//Client Side Predicition
+				if (go->isPlayer)
+				{					
+					Player* ret = (Player*)&go->behaviour;
+					go->lastServerInputSN = lastInputSN;
+					ret->serverPosition.x = serverposition.x;
+					ret->serverPosition.y = serverposition.y;									
+				}		
 
-				if (!App->modGameObject->interpolateEntities)
+				// Interpolation (finalPos init)
+				go->newReplicationState(serverposition, serverangle);
+
+				// Disable entity interpolation
+				if (!App->modGameObject->interpolateEntities || go->isPlayer)
 				{
 					go->position = serverposition;
-					go->angle = angle;
+					go->angle = serverangle;
 				}
+				
+
 			}
 		}
 		else if (action == ReplicationAction::Update_Texture)

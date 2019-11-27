@@ -78,7 +78,7 @@ bool ModuleGameObject::update()
 	{
 		if (gameObject.state == GameObject::UPDATING)
 		{
-			if (interpolateEntities)
+			if (interpolateEntities && !gameObject.isPlayer)
 				gameObject.Interpolate();
 			if (gameObject.behaviour != nullptr)
 				gameObject.behaviour->update();

@@ -39,6 +39,8 @@ private:
 
 	void onDisconnect() override;
 
+	vec2 ClientOnInput(const InputController &input);
+
 
 
 	//////////////////////////////////////////////////////////////////////
