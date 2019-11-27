@@ -38,7 +38,6 @@ bool ModuleResources::init()
 	loadTextureAsync("Textures/Entities/Zombie/zombie.png",     &zombie);
 	loadTextureAsync("Textures/VFX/blood.png",					&blood);
 	loadTextureAsync("Textures/VFX/bullet.png",					&bullet);
-	loadTextureAsync("Textures/VFX/shot.png",					&shot);
 	loadTextureAsync("Textures/VFX/laser.png",					&laser);
 	loadTextureAsync("Textures/VFX/Zombie_Death/sprite1.png",	&explosion1);
 	loadTextureAsync("Textures/VFX/Zombie_Death/sprite2.png",	&explosion2);

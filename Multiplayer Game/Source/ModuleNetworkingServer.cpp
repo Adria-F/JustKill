@@ -424,7 +424,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	return clientProxy.gameObject;
 }
 
-GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset)
+GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset, bool clientInstance)
 {
 	// Create a new game object with the player properties
 	GameObject *gameObject = Instantiate();
@@ -435,53 +435,26 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 	vec2 right = { -forward.y, forward.x };
 	gameObject->position = parent->position + offset.x*right + offset.y*forward;
 	gameObject->texture = App->modResources->bullet;
-	gameObject->collider = App->modCollision->addCollider(ColliderType::Bullet, gameObject);
+	if (!clientInstance)
+		gameObject->collider = App->modCollision->addCollider(ColliderType::Bullet, gameObject);
 
 	// Create behaviour
 	gameObject->behaviour = new Bullet;
 	gameObject->behaviour->gameObject = gameObject;
 
-	// Assign a new network identity to the object
-	App->modLinkingContext->registerNetworkGameObject(gameObject);
-
-	// Notify all client proxies' replication manager to create the object remotely
-	for (int i = 0; i < MAX_CLIENTS; ++i)
+	if (!clientInstance)
 	{
-		if (clientProxies[i].connected)
+		// Assign a new network identity to the object
+		App->modLinkingContext->registerNetworkGameObject(gameObject);
+
+		// Notify all client proxies' replication manager to create the object remotely
+		for (int i = 0; i < MAX_CLIENTS; ++i)
 		{
-			// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
-			clientProxies[i].replicationManager.create(gameObject->networkId);
-		}
-	}
-
-	return gameObject;
-}
-
-GameObject * ModuleNetworkingServer::spawnShot(GameObject * parent, vec2 offset)
-{
-	GameObject *gameObject = Instantiate();
-	gameObject->size = { 12, 20 };
-	gameObject->angle = parent->angle;
-	gameObject->order = 5;
-	vec2 forward = vec2FromDegrees(parent->angle);
-	vec2 right = { -forward.y, forward.x };
-	gameObject->position = parent->position + offset.x*right + offset.y*forward;
-	gameObject->texture = App->modResources->shot;
-
-	// Create behaviour
-	gameObject->behaviour = new Shot;
-	gameObject->behaviour->gameObject = gameObject;
-
-	// Assign a new network identity to the object
-	App->modLinkingContext->registerNetworkGameObject(gameObject);
-
-	// Notify all client proxies' replication manager to create the object remotely
-	for (int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if (clientProxies[i].connected)
-		{
-			// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
-			clientProxies[i].replicationManager.create(gameObject->networkId);
+			if (clientProxies[i].connected)
+			{
+				// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
+				clientProxies[i].replicationManager.create(gameObject->networkId);
+			}
 		}
 	}
 
