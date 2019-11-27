@@ -73,9 +73,6 @@ struct Player : public Behaviour
 	vec2 laser_offset = { 10.0f, 500.0f };
 	GameObject* laser = nullptr;
 
-	// For Client Prediction
-	vec2 serverPosition = { 0,0 };	
-
 	void start() override
 	{
 		gameObject->tag = (uint32)(Random.next() * UINT_MAX);

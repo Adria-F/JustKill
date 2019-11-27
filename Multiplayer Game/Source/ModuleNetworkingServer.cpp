@@ -188,7 +188,6 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 						proxy->gamepad.verticalAxis = inputData.verticalAxis;
 						unpackInputControllerButtons(inputData.buttonBits, proxy->gamepad);
 						proxy->gameObject->behaviour->onInput(proxy->gamepad);
-						proxy->gameObject->lastServerInputSN = inputData.sequenceNumber; //Save inputSN for client prediction
 
 						//Process Mouse
 						proxy->mouse.x = inputData.mouseX;

@@ -23,7 +23,7 @@ struct GameObject
 	vec2 final_position = vec2{ 0.0f, 0.0f };
 	float final_angle = 0.0f;
 
-	float interpolationSecondsElapsed = 0.0f;	
+	float interpolationSecondsElapsed = 0.0f;
 
 	// Animation component
 	Animation* animation = nullptr;
@@ -46,9 +46,6 @@ struct GameObject
 
 	// Detect the player inside the client
 	bool isPlayer = false;
-
-	// Last input sequence number for client prediction
-	uint32 lastServerInputSN = 0;
 	
 private:
 

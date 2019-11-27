@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.539
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Networks", "Source\Networks.vcxproj", "{F9207668-2507-494B-BEA1-A30248E2B38F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E4A6D7EF-0F46-470C-BC04-77E496D74084} = {E4A6D7EF-0F46-470C-BC04-77E496D74084}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dummy", "Dummy\Dummy.vcxproj", "{E4A6D7EF-0F46-470C-BC04-77E496D74084}"
 EndProject

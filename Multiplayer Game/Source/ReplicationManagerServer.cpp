@@ -67,9 +67,7 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it_c).first);
 			packet << go->position.x;
 			packet << go->position.y;
-			packet << go->angle;			
-			packet << go->lastServerInputSN; //This should be in the player behaveour but isPlayer does not switch to true on time.
-						
+			packet << go->angle;
 		}
 		else if ((*it_c).second == ReplicationAction::Update_Texture)
 		{
