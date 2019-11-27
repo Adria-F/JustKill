@@ -39,7 +39,7 @@ private:
 
 	void onDisconnect() override;
 
-
+	void processAllInputs();
 
 	//////////////////////////////////////////////////////////////////////
 	// Client state
@@ -68,7 +68,7 @@ private:
 	ReplicationManagerClient replicationManager;
 
 	bool clientPrediction = true;
-
+	bool serverReconciliation = true;
 
 	// Input ///////////
 	static const int MAX_INPUT_DATA_SIMULTANEOUS_PACKETS = 64;

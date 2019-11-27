@@ -122,6 +122,8 @@ void ModuleNetworkingClient::onGui()
 
 			ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
 			ImGui::Checkbox("Client prediction", &clientPrediction);
+			if (clientPrediction)
+				ImGui::Checkbox("Server Reconciliation", &serverReconciliation);
 		}
 	}
 }
@@ -154,13 +156,18 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 		{
 			replicationPing = Time.time - lastReplicationTime;
 			lastReplicationTime = Time.time;
+			
 			//Receive ACK of input
 			uint32 lastPackedProccessed;
 			packet >> lastPackedProccessed;
-			inputDataFront = lastPackedProccessed + 1;
+			inputDataFront = lastPackedProccessed;
 			
 			App->delManager->processSequenceNumber(packet);
 			replicationManager.read(packet, networkId);
+
+			//Apply all new performed inputs
+			if (clientPrediction && serverReconciliation)
+				processAllInputs();
 		}
 	}
 }
@@ -191,6 +198,7 @@ void ModuleNetworkingClient::onUpdate()
 		secondsSinceLastMouseDelivery += Time.deltaTime;
 		secondsSinceLastPing += Time.deltaTime;
 
+		// Client side prediction
 		GameObject* playerClientGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
 		if (clientPrediction && playerClientGameObject)
 		{
@@ -202,6 +210,7 @@ void ModuleNetworkingClient::onUpdate()
 			playerClientGameObject->behaviour->onMouse(mouse);
 		}
 
+		// Send input packet
 		if (inputDataBack - inputDataFront < ArrayCount(inputData))
 		{
 			uint32 currentInputData = inputDataBack++;
@@ -238,8 +247,6 @@ void ModuleNetworkingClient::onUpdate()
 
 				// Clear the queue
 				//inputDataFront = inputDataBack;
-
-
 
 				sendPacket(packet, serverAddress);
 			}
@@ -296,3 +303,29 @@ void ModuleNetworkingClient::onDisconnect()
 	App->modRender->cameraPosition = {};
 }
 
+void ModuleNetworkingClient::processAllInputs()
+{
+	GameObject* playerClientGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
+	if (playerClientGameObject && inputDataBack - inputDataFront < ArrayCount(inputData))
+	{
+		for (uint32 i = inputDataFront; i < inputDataBack; ++i) //For all current inputs (not processed by the server)
+		{
+			InputPacketData &inputPacketData = inputData[i % ArrayCount(inputData)];
+
+			InputController input;
+			MouseController mouse;
+
+			//Process Keyboard
+			input.horizontalAxis = inputPacketData.horizontalAxis;
+			input.verticalAxis = inputPacketData.verticalAxis;
+			unpackInputControllerButtons(inputPacketData.buttonBits, input);
+			playerClientGameObject->behaviour->onInput(input);
+
+			//Process Mouse
+			mouse.x = inputPacketData.mouseX;
+			mouse.y = inputPacketData.mouseY;
+			mouse.buttons[0] = (ButtonState)inputPacketData.leftButton;
+			playerClientGameObject->behaviour->onMouse(mouse);
+		}
+	}
+}

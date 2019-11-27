@@ -46,6 +46,9 @@ struct GameObject
 
 	// Detect the player inside the client
 	bool isPlayer = false;
+
+	// Interpolate object
+	bool doInterpolation = true;
 	
 private:
 

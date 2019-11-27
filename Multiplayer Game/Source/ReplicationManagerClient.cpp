@@ -33,7 +33,10 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			packet >> go->color.b;
 			packet >> go->color.a;
 			if (networkId == clientNetworkId)
+			{
 				go->isPlayer = true;
+				go->doInterpolation = false;
+			}
 
 			if (go->isPlayer)
 			{
@@ -41,6 +44,7 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 				script->gameObject = go;
 				script->isServer = false;
 				script->laser = App->modNetClient->spawnLaser(go);
+				script->laser->doInterpolation = false;
 				go->behaviour = script;
 			}
 
@@ -76,18 +80,18 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 
-			vec2 serverposition;
+			vec2 position;
 			float angle;
-			packet >> serverposition.x;
-			packet >> serverposition.y;
+			packet >> position.x;
+			packet >> position.y;
 			packet >> angle;
 			if (go != nullptr)
 			{
-				go->newReplicationState(serverposition, angle);
+				go->newReplicationState(position, angle);
 
-				if (!App->modGameObject->interpolateEntities)
+				if (!App->modGameObject->interpolateEntities || !go->doInterpolation)
 				{
-					go->position = serverposition;
+					go->position = position;
 					go->angle = angle;
 				}
 			}

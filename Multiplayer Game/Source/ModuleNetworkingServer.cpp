@@ -231,7 +231,7 @@ void ModuleNetworkingServer::onUpdate()
 				{
 					OutputMemoryStream packet;
 					packet << ServerMessage::Replication;
-					packet << clientProxy.nextExpectedInputSequenceNumber - 1; //ACK of last received input
+					packet << clientProxy.nextExpectedInputSequenceNumber; //ACK of last received input
 
 					Delivery* delivery = App->delManager->writeSequenceNumber(packet);
 					delivery->deleagate = new DeliveryDelegateReplication(); //TODOAdPi
