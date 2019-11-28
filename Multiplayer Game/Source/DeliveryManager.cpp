@@ -20,12 +20,12 @@ bool DeliveryManager::processSequenceNumber(const InputMemoryStream & packet)
 	{
 		SNExpected = SNRecieved + 1;
 		pendingACKList.push_back(SNRecieved);
-		//LOG("Packet %i has been Recieved by Client", SNRecieved);
+		LOG("Packet %i has been Recieved by Client", SNRecieved);
 		return true;
 	}
 	else
 	{
-		//LOG("Difference between SNReieved and SNExpected: %i ", SNRecieved - SNExpected);
+		LOG("Difference between SNReieved and SNExpected: %i ", SNRecieved - SNExpected);
 	}
 		
 	return false;
@@ -61,7 +61,7 @@ void DeliveryManager::processAckdSequenceNumbers(const InputMemoryStream & packe
 		{
 			pendingDeliveryMap[ACK]->deleagate->onDeliverySuccess(this);			
 			pendingDeliveryMap.erase(ACK);
-			//LOG("Packet %i has been ACK", ACK);
+			LOG("Packet %i has been ACK", ACK);
 		}
 	}
 
@@ -78,7 +78,7 @@ void DeliveryManager::processTimedOutPackets()
 
 			eraseList.push_back((*it).first);
 
-			//LOG("Packet %i has been discarted by Time out", (*it).first);
+			LOG("Packet %i has been discarted by Time out", (*it).first);
 		}
 	}
 

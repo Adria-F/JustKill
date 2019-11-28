@@ -23,7 +23,7 @@ struct GameObject
 	vec2 final_position = vec2{ 0.0f, 0.0f };
 	float final_angle = 0.0f;
 
-	float interpolationSecondsElapsed = 0.0f;	
+	float interpolationSecondsElapsed = 0.0f;
 
 	// Animation component
 	Animation* animation = nullptr;
@@ -47,8 +47,10 @@ struct GameObject
 	// Detect the player inside the client
 	bool isPlayer = false;
 
-	// Last input sequence number for client prediction
-	uint32 lastServerInputSN = 0;
+	bool clientInstance = false; //To define that this will be an instance executed by the client code
+
+	// Interpolate object
+	bool doInterpolation = true;
 	
 private:
 
@@ -81,7 +83,7 @@ public:
 
 	GameObject gameObjects[MAX_GAME_OBJECTS] = {};
 
-	bool interpolateEntities = false;
+	bool interpolateEntities = true;
 };
 
 

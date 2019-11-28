@@ -39,9 +39,7 @@ private:
 
 	void onDisconnect() override;
 
-	vec2 ClientOnInput(const InputController &input);
-
-
+	void processAllInputs();
 
 	//////////////////////////////////////////////////////////////////////
 	// Client state
@@ -70,7 +68,7 @@ private:
 	ReplicationManagerClient replicationManager;
 
 	bool clientPrediction = true;
-
+	bool serverReconciliation = true;
 
 	// Input ///////////
 	static const int MAX_INPUT_DATA_SIMULTANEOUS_PACKETS = 64;

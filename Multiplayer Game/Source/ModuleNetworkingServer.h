@@ -77,9 +77,7 @@ public:
 
 	GameObject * spawnPlayer(ClientProxy &clientProxy, uint8 spaceshipType);
 
-	GameObject * spawnBullet(GameObject *parent, vec2 offset);
-
-	GameObject * spawnShot(GameObject* parent, vec2 offset);
+	GameObject * spawnBullet(GameObject *parent, vec2 offset, bool clientInstance = false);
 
 	GameObject* spawnRezUI(vec2 position);
 

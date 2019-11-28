@@ -33,7 +33,25 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			packet >> go->color.b;
 			packet >> go->color.a;
 			if (networkId == clientNetworkId)
+			{
 				go->isPlayer = true;
+				go->doInterpolation = false;
+			}
+
+			packet >> go->clientInstance;
+			if (go->clientInstance) //It will be an instanced object on the client
+			{
+				//Currently only for bullets
+				go->behaviour = new Bullet();
+				go->behaviour->gameObject = go;
+				go->behaviour->isServer = false;
+				go->doInterpolation = false;
+				GameObject* clientPlayer = App->modLinkingContext->getNetworkGameObject(clientNetworkId);
+				vec2 bullet_offset = { 10.0f, 20.0f };
+				vec2 forward = vec2FromDegrees(clientPlayer->angle);
+				vec2 right = { -forward.y, forward.x };
+				go->position = clientPlayer->position + forward * bullet_offset.y + right * bullet_offset.x;
+			}
 
 			if (go->isPlayer)
 			{
@@ -41,6 +59,7 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 				script->gameObject = go;
 				script->isServer = false;
 				script->laser = App->modNetClient->spawnLaser(go);
+				script->laser->doInterpolation = false;
 				go->behaviour = script;
 			}
 
@@ -76,35 +95,24 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 
-			vec2 serverposition;
-			float serverangle;
-			uint32 lastInputSN;
-			packet >> serverposition.x;
-			packet >> serverposition.y;
-			packet >> serverangle;
-			packet >> lastInputSN;
-			if (go != nullptr)
+			vec2 position;
+			float angle;
+			packet >> position.x;
+			packet >> position.y;
+			packet >> angle;
+			if (go != nullptr/* && !go->clientInstance*/)
 			{
-				//Client Side Predicition
-				if (go->isPlayer)
-				{					
-					Player* ret = (Player*)&go->behaviour;
-					go->lastServerInputSN = lastInputSN;
-					ret->serverPosition.x = serverposition.x;
-					ret->serverPosition.y = serverposition.y;									
-				}		
-
-				// Interpolation (finalPos init)
-				go->newReplicationState(serverposition, serverangle);
-
-				// Disable entity interpolation
-				if (!App->modGameObject->interpolateEntities || go->isPlayer)
+				if (go->clientInstance)
 				{
-					go->position = serverposition;
-					go->angle = serverangle;
+					go->doInterpolation = true;
 				}
-				
+				go->newReplicationState(position, angle);
 
+				if (!App->modGameObject->interpolateEntities || !go->doInterpolation)
+				{
+					go->position = position;
+					go->angle = angle;
+				}
 			}
 		}
 		else if (action == ReplicationAction::Update_Texture)

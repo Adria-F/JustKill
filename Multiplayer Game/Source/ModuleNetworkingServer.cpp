@@ -188,7 +188,6 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 						proxy->gamepad.verticalAxis = inputData.verticalAxis;
 						unpackInputControllerButtons(inputData.buttonBits, proxy->gamepad);
 						proxy->gameObject->behaviour->onInput(proxy->gamepad);
-						proxy->gameObject->lastServerInputSN = inputData.sequenceNumber; //Save inputSN for client prediction
 
 						//Process Mouse
 						proxy->mouse.x = inputData.mouseX;
@@ -232,7 +231,7 @@ void ModuleNetworkingServer::onUpdate()
 				{
 					OutputMemoryStream packet;
 					packet << ServerMessage::Replication;
-					packet << clientProxy.nextExpectedInputSequenceNumber - 1; //ACK of last received input
+					packet << clientProxy.nextExpectedInputSequenceNumber; //ACK of last received input
 
 					Delivery* delivery = App->delManager->writeSequenceNumber(packet);
 					delivery->deleagate = new DeliveryDelegateReplication(); //TODOAdPi
@@ -425,7 +424,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	return clientProxy.gameObject;
 }
 
-GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset)
+GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset, bool clientInstance)
 {
 	// Create a new game object with the player properties
 	GameObject *gameObject = Instantiate();
@@ -440,37 +439,6 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 
 	// Create behaviour
 	gameObject->behaviour = new Bullet;
-	gameObject->behaviour->gameObject = gameObject;
-
-	// Assign a new network identity to the object
-	App->modLinkingContext->registerNetworkGameObject(gameObject);
-
-	// Notify all client proxies' replication manager to create the object remotely
-	for (int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if (clientProxies[i].connected)
-		{
-			// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
-			clientProxies[i].replicationManager.create(gameObject->networkId);
-		}
-	}
-
-	return gameObject;
-}
-
-GameObject * ModuleNetworkingServer::spawnShot(GameObject * parent, vec2 offset)
-{
-	GameObject *gameObject = Instantiate();
-	gameObject->size = { 12, 20 };
-	gameObject->angle = parent->angle;
-	gameObject->order = 5;
-	vec2 forward = vec2FromDegrees(parent->angle);
-	vec2 right = { -forward.y, forward.x };
-	gameObject->position = parent->position + offset.x*right + offset.y*forward;
-	gameObject->texture = App->modResources->shot;
-
-	// Create behaviour
-	gameObject->behaviour = new Shot;
 	gameObject->behaviour->gameObject = gameObject;
 
 	// Assign a new network identity to the object

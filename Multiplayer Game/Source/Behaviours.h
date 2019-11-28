@@ -54,7 +54,6 @@ struct Player : public Behaviour
 	float lastShotTime = 0.0f;
 
 	vec2 bullet_offset = { 10.0f, 30.0f };
-	vec2 shot_offset = { 10.0f,35.0f };
 
 	bool isDown = false;
 	float rezTime = 3.0f;
@@ -72,9 +71,6 @@ struct Player : public Behaviour
 
 	vec2 laser_offset = { 10.0f, 500.0f };
 	GameObject* laser = nullptr;
-
-	// For Client Prediction
-	vec2 serverPosition = { 0,0 };	
 
 	void start() override
 	{
@@ -154,9 +150,9 @@ struct Player : public Behaviour
 			{
 				lastShotTime = Time.time;
 
-				GameObject* laser = App->modNetServer->spawnBullet(gameObject, bullet_offset);
-				laser->tag = gameObject->tag;
-				App->modNetServer->spawnShot(gameObject, shot_offset);
+				GameObject* bullet = App->modNetServer->spawnBullet(gameObject, bullet_offset, !isServer);
+				bullet->clientInstance = true;
+				bullet->tag = gameObject->tag;
 			}
 		}
 	}
