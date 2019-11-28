@@ -77,53 +77,62 @@ void ModuleNetworkingClient::onGui()
 {
 	if (state == ClientState::Stopped) return;
 
-	if (ImGui::CollapsingHeader("ModuleNetworkingClient", ImGuiTreeNodeFlags_DefaultOpen))
+	if (App->modUI->isPlaying == false)
 	{
-		if (state == ClientState::WaitingWelcome)
+		if (ImGui::CollapsingHeader("ModuleNetworkingClient", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::Text("Waiting for server response...");
-		}
-		else if (state == ClientState::Playing)
-		{
-			ImGui::Text("Connected to server");
-			ImGui::Text(" - Replication Ping: %f", replicationPing);			
-
-			ImGui::Separator();
-
-			ImGui::Text("Player info:");
-			ImGui::Text(" - Id: %u", playerId);
-			ImGui::Text(" - Name: %s", playerName.c_str());
-
-			ImGui::Separator();
-
-			ImGui::Text("Player info:");
-			ImGui::Text(" - Type: %u", spaceshipType);
-			ImGui::Text(" - Network id: %u", networkId);
-
-			vec2 playerPosition = {};
-			GameObject *playerGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
-			if (playerGameObject != nullptr) {
-				playerPosition = playerGameObject->position;
+			if (state == ClientState::WaitingWelcome)
+			{
+				ImGui::Text("Waiting for server response...");
 			}
-			ImGui::Text(" - Coordinates: (%f, %f)", playerPosition.x, playerPosition.y);
+			else if (state == ClientState::Playing)
+			{
+				ImGui::Text("Connected to server");
+				ImGui::Text(" - Replication Ping: %f", replicationPing);
 
-			ImGui::Separator();
+				ImGui::Separator();
 
-			ImGui::Text("Connection checking info:");
-			ImGui::Text(" - Ping interval (s): %f", PING_INTERVAL_SECONDS);
-			ImGui::Text(" - Disconnection timeout (s): %f", DISCONNECT_TIMEOUT_SECONDS);
+				ImGui::Text("Player info:");
+				ImGui::Text(" - Id: %u", playerId);
+				ImGui::Text(" - Name: %s", playerName.c_str());
 
-			ImGui::Separator();
+				ImGui::Separator();
 
-			ImGui::Text("Input:");
-			ImGui::InputFloat("Delivery interval (s)", &inputDeliveryIntervalSeconds, 0.01f, 0.1f, 4);
+				ImGui::Text("Player info:");
+				ImGui::Text(" - Type: %u", spaceshipType);
+				ImGui::Text(" - Network id: %u", networkId);
 
-			ImGui::Separator();
+				vec2 playerPosition = {};
+				GameObject *playerGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
+				if (playerGameObject != nullptr) {
+					playerPosition = playerGameObject->position;
+				}
+				ImGui::Text(" - Coordinates: (%f, %f)", playerPosition.x, playerPosition.y);
 
-			ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
-			ImGui::Checkbox("Client prediction", &clientPrediction);
+				ImGui::Separator();
+
+				ImGui::Text("Connection checking info:");
+				ImGui::Text(" - Ping interval (s): %f", PING_INTERVAL_SECONDS);
+				ImGui::Text(" - Disconnection timeout (s): %f", DISCONNECT_TIMEOUT_SECONDS);
+
+				ImGui::Separator();
+
+				ImGui::Text("Input:");
+				ImGui::InputFloat("Delivery interval (s)", &inputDeliveryIntervalSeconds, 0.01f, 0.1f, 4);
+
+				ImGui::Separator();
+
+				ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
+				ImGui::Checkbox("Client prediction", &clientPrediction);
+			}
 		}
 	}
+	else
+	{
+		ImGui::Begin("Player Info");
+		ImGui::Text("Score: :)");
+	}
+
 }
 
 void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, const sockaddr_in &fromAddress)
@@ -274,18 +283,20 @@ void ModuleNetworkingClient::onUpdate()
 							inputPacketData.mouseY = Mouse.y - Window.height / 2;
 							inputPacketData.leftButton = Mouse.buttons[0];
 						}
+
 					}					
 				}
 			}
 			// Get first input of the inputData
 			InputPacketData currentInput = inputData[inputDataFront % ArrayCount(inputData)];
 			InputController ret = inputControllerFromInputPacketData(currentInput, Input);
+			playerClientGameObject->behaviour->onInput(ret); //Apply it
 
 			MouseController mouse;
 			mouse.x = Mouse.x - Window.width / 2;
 			mouse.y = Mouse.y - Window.height / 2;
 			mouse.buttons[0] = Mouse.buttons[0];
-			playerClientGameObject->behaviour->onInput(ret); //Apply it
+
 			playerClientGameObject->behaviour->onMouse(mouse);
 		}
 

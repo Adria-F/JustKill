@@ -155,58 +155,66 @@ bool ModuleNetworking::gui()
 {
 	if (isConnected())
 	{
-		ImGui::Begin("ModuleNetworking window");
-		
-		ImGui::Text(" - Current time: %f", Time.time);
-		ImGui::Text(" - # Packet sent: %u", sentPacketsCount);
-		ImGui::Text(" - # Packet received: %u", receivedPacketsCount);
+		if (App->modNetServer->isEnabled() || !App->modUI->isPlaying)
+		{
 
-		ImGui::Text(" - # Networked objects: %u", App->modLinkingContext->getNetworkGameObjectsCount());
+			ImGui::Begin("ModuleNetworking window");
 
-		if (ImGui::Button("Disconnect")) {
-			disconnect();
-		}
+			ImGui::Text(" - Current time: %f", Time.time);
+			ImGui::Text(" - # Packet sent: %u", sentPacketsCount);
+			ImGui::Text(" - # Packet received: %u", receivedPacketsCount);
 
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.45f);
+			ImGui::Text(" - # Networked objects: %u", App->modLinkingContext->getNetworkGameObjectsCount());
+
+			if (ImGui::Button("Disconnect")) {
+				disconnect();
+			}
+
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.45f);
 
 #if defined(SIMULATE_REAL_WORLD_CONDITIONS)
 
-		if (ImGui::CollapsingHeader("Simulate real world conditions", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ImGui::Checkbox("Simulate latency / jitter", &simulateLatency);
-			if (simulateLatency)
+			if (ImGui::CollapsingHeader("Simulate real world conditions", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				ImGui::InputFloat("Max. latency (s)", &simulatedLatency, 0.001f, 0.01f, 4);
-				ImGui::InputFloat("Max. jitter (s)", &simulatedJitter, 0.001f, 0.01f, 4);
-				if (ImGui::Button("Reset##defaults_latency_jitter")) {
-					simulatedLatency = 0.07f;
-					simulatedJitter = 0.03f;
+				ImGui::Checkbox("Simulate latency / jitter", &simulateLatency);
+				if (simulateLatency)
+				{
+					ImGui::InputFloat("Max. latency (s)", &simulatedLatency, 0.001f, 0.01f, 4);
+					ImGui::InputFloat("Max. jitter (s)", &simulatedJitter, 0.001f, 0.01f, 4);
+					if (ImGui::Button("Reset##defaults_latency_jitter")) {
+						simulatedLatency = 0.07f;
+						simulatedJitter = 0.03f;
+					}
+				}
+				ImGui::Checkbox("Simulate packet drops", &simulateDrops);
+				if (simulateDrops)
+				{
+					ImGui::InputFloat("Drop ratio", &simulatedDropRatio, 0.01f, 0.1f, 4);
+					if (ImGui::Button("Reset##default_drop_ratio")) {
+						simulatedDropRatio = 0.01f;
+					}
+					ImGui::Text(" # Dropped packets: %d", simulatedPacketsDropped);
+					ImGui::Text(" #  - Replication Packets Dropped: %d", replicationPacketsDropped);
+					ImGui::Text(" #  - Ping Packets Dropped: %d", pingPacketsDropped);
+					ImGui::Text(" #  - Welcome Packets Dropped: %d", welcomePacketDropped);
+					ImGui::Text(" #  - Unwelcome Packets Dropped: %d", unwelcomePacketDropped);
+					ImGui::Text(" # Received packets: %d", simulatedPacketsReceived);
 				}
 			}
-			ImGui::Checkbox("Simulate packet drops", &simulateDrops);
-			if (simulateDrops)
-			{
-				ImGui::InputFloat("Drop ratio", &simulatedDropRatio, 0.01f, 0.1f, 4);
-				if (ImGui::Button("Reset##default_drop_ratio")) {
-					simulatedDropRatio = 0.01f;
-				}
-				ImGui::Text(" # Dropped packets: %d", simulatedPacketsDropped);
-				ImGui::Text(" #  - Replication Packets Dropped: %d", replicationPacketsDropped);
-				ImGui::Text(" #  - Ping Packets Dropped: %d", pingPacketsDropped);
-				ImGui::Text(" #  - Welcome Packets Dropped: %d", welcomePacketDropped);
-				ImGui::Text(" #  - Unwelcome Packets Dropped: %d", unwelcomePacketDropped);
-				ImGui::Text(" # Received packets: %d", simulatedPacketsReceived);
-			}
-		}
-
 #endif
+		}
+	}
 
-		onGui();
+	onGui();
+
+	if (App->modNetServer->isEnabled() || !App->modUI->isPlaying)
+	{
 
 		ImGui::PopItemWidth();
-
-		ImGui::End();
 	}
+
+	ImGui::End();
+
 
 	return true;
 }
