@@ -374,7 +374,7 @@ bool ModulePlatform::preUpdate()
 					}
 					else if (VKCode == VK_F1 && IsDown)
 					{
-						App->modUI->setEnabled(!App->modUI->isEnabled());
+						App->modUI->isPlaying = !App->modUI->isPlaying;
 					}
 				}
 			}

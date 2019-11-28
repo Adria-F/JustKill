@@ -77,48 +77,50 @@ void ModuleNetworkingClient::onGui()
 {
 	if (state == ClientState::Stopped) return;
 
-	if (ImGui::CollapsingHeader("ModuleNetworkingClient", ImGuiTreeNodeFlags_DefaultOpen))
+	if (App->modUI->isPlaying == false)
 	{
-		if (state == ClientState::WaitingWelcome)
+		if (ImGui::CollapsingHeader("ModuleNetworkingClient", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::Text("Waiting for server response...");
-		}
-		else if (state == ClientState::Playing)
-		{
-			ImGui::Text("Connected to server");
-			ImGui::Text(" - Replication Ping: %f", replicationPing);			
-
-			ImGui::Separator();
-
-			ImGui::Text("Player info:");
-			ImGui::Text(" - Id: %u", playerId);
-			ImGui::Text(" - Name: %s", playerName.c_str());
-
-			ImGui::Separator();
-
-			ImGui::Text("Player info:");
-			ImGui::Text(" - Type: %u", spaceshipType);
-			ImGui::Text(" - Network id: %u", networkId);
-
-			vec2 playerPosition = {};
-			GameObject *playerGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
-			if (playerGameObject != nullptr) {
-				playerPosition = playerGameObject->position;
+			if (state == ClientState::WaitingWelcome)
+			{
+				ImGui::Text("Waiting for server response...");
 			}
-			ImGui::Text(" - Coordinates: (%f, %f)", playerPosition.x, playerPosition.y);
+			else if (state == ClientState::Playing)
+			{
+				ImGui::Text("Connected to server");
+				ImGui::Text(" - Replication Ping: %f", replicationPing);
 
-			ImGui::Separator();
+				ImGui::Separator();
 
-			ImGui::Text("Connection checking info:");
-			ImGui::Text(" - Ping interval (s): %f", PING_INTERVAL_SECONDS);
-			ImGui::Text(" - Disconnection timeout (s): %f", DISCONNECT_TIMEOUT_SECONDS);
+				ImGui::Text("Player info:");
+				ImGui::Text(" - Id: %u", playerId);
+				ImGui::Text(" - Name: %s", playerName.c_str());
 
-			ImGui::Separator();
+				ImGui::Separator();
 
-			ImGui::Text("Input:");
-			ImGui::InputFloat("Delivery interval (s)", &inputDeliveryIntervalSeconds, 0.01f, 0.1f, 4);
+				ImGui::Text("Player info:");
+				ImGui::Text(" - Type: %u", spaceshipType);
+				ImGui::Text(" - Network id: %u", networkId);
 
-			ImGui::Separator();
+				vec2 playerPosition = {};
+				GameObject *playerGameObject = App->modLinkingContext->getNetworkGameObject(networkId);
+				if (playerGameObject != nullptr) {
+					playerPosition = playerGameObject->position;
+				}
+				ImGui::Text(" - Coordinates: (%f, %f)", playerPosition.x, playerPosition.y);
+
+				ImGui::Separator();
+
+				ImGui::Text("Connection checking info:");
+				ImGui::Text(" - Ping interval (s): %f", PING_INTERVAL_SECONDS);
+				ImGui::Text(" - Disconnection timeout (s): %f", DISCONNECT_TIMEOUT_SECONDS);
+
+				ImGui::Separator();
+
+				ImGui::Text("Input:");
+				ImGui::InputFloat("Delivery interval (s)", &inputDeliveryIntervalSeconds, 0.01f, 0.1f, 4);
+
+				ImGui::Separator();
 
 			ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
 			ImGui::Checkbox("Client prediction", &clientPrediction);
@@ -126,6 +128,12 @@ void ModuleNetworkingClient::onGui()
 				ImGui::Checkbox("Server Reconciliation", &serverReconciliation);
 		}
 	}
+	else
+	{
+		ImGui::Begin("Player Info");
+		ImGui::Text("Score: :)");
+	}
+
 }
 
 void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, const sockaddr_in &fromAddress)
@@ -151,17 +159,17 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 	}
 	else if (state == ClientState::Playing)
 	{
-		// TODO(jesus): Handle incoming messages from server		
+		// TODO(jesus): Handle incoming messages from server
 		if (message == ServerMessage::Replication)
 		{
 			replicationPing = Time.time - lastReplicationTime;
 			lastReplicationTime = Time.time;
-			
+
 			//Receive ACK of input
 			uint32 lastPackedProccessed;
 			packet >> lastPackedProccessed;
 			inputDataFront = lastPackedProccessed;
-			
+
 			App->delManager->processSequenceNumber(packet);
 			replicationManager.read(packet, networkId);
 
@@ -222,7 +230,7 @@ void ModuleNetworkingClient::onUpdate()
 			inputPacketData.mouseX = Mouse.x - Window.width / 2;
 			inputPacketData.mouseY = Mouse.y - Window.height / 2;
 			inputPacketData.leftButton = Mouse.buttons[0];
-			
+
 			// Create packet (if there's input and the input delivery interval exceeded)
 			if (secondsSinceLastInputDelivery > inputDeliveryIntervalSeconds)
 			{
@@ -242,7 +250,7 @@ void ModuleNetworkingClient::onUpdate()
 					packet << inputPacketData.mouseX;
 					packet << inputPacketData.mouseY;
 					packet << inputPacketData.leftButton;
-										
+
 				}
 
 				// Clear the queue
