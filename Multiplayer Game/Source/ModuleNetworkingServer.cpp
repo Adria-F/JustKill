@@ -435,26 +435,22 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 	vec2 right = { -forward.y, forward.x };
 	gameObject->position = parent->position + offset.x*right + offset.y*forward;
 	gameObject->texture = App->modResources->bullet;
-	if (!clientInstance)
-		gameObject->collider = App->modCollision->addCollider(ColliderType::Bullet, gameObject);
+	gameObject->collider = App->modCollision->addCollider(ColliderType::Bullet, gameObject);
 
 	// Create behaviour
 	gameObject->behaviour = new Bullet;
 	gameObject->behaviour->gameObject = gameObject;
 
-	if (!clientInstance)
-	{
-		// Assign a new network identity to the object
-		App->modLinkingContext->registerNetworkGameObject(gameObject);
+	// Assign a new network identity to the object
+	App->modLinkingContext->registerNetworkGameObject(gameObject);
 
-		// Notify all client proxies' replication manager to create the object remotely
-		for (int i = 0; i < MAX_CLIENTS; ++i)
+	// Notify all client proxies' replication manager to create the object remotely
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clientProxies[i].connected)
 		{
-			if (clientProxies[i].connected)
-			{
-				// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
-				clientProxies[i].replicationManager.create(gameObject->networkId);
-			}
+			// TODO(jesus): Notify this proxy's replication manager about the creation of this game object
+			clientProxies[i].replicationManager.create(gameObject->networkId);
 		}
 	}
 

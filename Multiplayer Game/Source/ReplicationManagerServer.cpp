@@ -51,8 +51,9 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 			packet << go->color.g;
 			packet << go->color.b;
 			packet << go->color.a;
-			packet << (go->animation != nullptr); //Boolean to know if there is animation
+			packet << go->clientInstance;
 
+			packet << (go->animation != nullptr); //Boolean to know if there is animation
 			if (go->animation)
 			{
 				packet << go->animation->tag;

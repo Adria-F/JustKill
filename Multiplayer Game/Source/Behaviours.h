@@ -54,7 +54,6 @@ struct Player : public Behaviour
 	float lastShotTime = 0.0f;
 
 	vec2 bullet_offset = { 10.0f, 30.0f };
-	vec2 shot_offset = { 10.0f,35.0f };
 
 	bool isDown = false;
 	float rezTime = 3.0f;
@@ -147,12 +146,12 @@ struct Player : public Behaviour
 			gameObject->angle = degreesFromRadians(atan2(mouse.y, mouse.x)) + 90;
 			NetworkCommunication(UPDATE_POSITION, gameObject);
 
-			if (mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
+			if (isServer && mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
 			{
 				lastShotTime = Time.time;
 
 				GameObject* bullet = App->modNetServer->spawnBullet(gameObject, bullet_offset, !isServer);
-				bullet->behaviour->isServer = isServer;
+				bullet->clientInstance = true;
 				bullet->tag = gameObject->tag;
 			}
 		}
