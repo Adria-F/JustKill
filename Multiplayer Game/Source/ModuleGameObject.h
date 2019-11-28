@@ -83,7 +83,7 @@ public:
 
 	GameObject gameObjects[MAX_GAME_OBJECTS] = {};
 
-	bool interpolateEntities = false;
+	bool interpolateEntities = true;
 };
 
 

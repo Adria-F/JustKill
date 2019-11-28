@@ -122,10 +122,11 @@ void ModuleNetworkingClient::onGui()
 
 				ImGui::Separator();
 
-			ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
-			ImGui::Checkbox("Client prediction", &clientPrediction);
-			if (clientPrediction)
-				ImGui::Checkbox("Server Reconciliation", &serverReconciliation);
+				ImGui::Checkbox("Entity interpolation", &App->modGameObject->interpolateEntities);
+				ImGui::Checkbox("Client prediction", &clientPrediction);
+				if (clientPrediction)
+					ImGui::Checkbox("Server Reconciliation", &serverReconciliation);
+			}
 		}
 	}
 	else
