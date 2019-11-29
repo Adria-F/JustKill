@@ -184,11 +184,14 @@ struct Player : public Behaviour
 		{
 			if (isDown)
 			{
-				detectedPlayers++;			
-
-				if (rez == nullptr)
-				{
-					rez = App->modNetServer->spawnRezUI(gameObject->position);
+				Player* ret = (Player*)c2.gameObject->behaviour;
+				if (!ret->isDown)
+				{					
+					detectedPlayers++;
+					if (rez == nullptr)
+					{
+						rez = App->modNetServer->spawnRezUI(gameObject->position);
+					}
 				}
 			}
 		}
