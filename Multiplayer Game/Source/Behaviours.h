@@ -61,7 +61,7 @@ struct Player : public Behaviour
 
 	int detectedPlayers = 0;
 
-	float immunityDuration = 1.0f;
+	float immunityDuration = 5.0f;
 	float lastHit = 0.0f;
 
 	int initialHealth = 1;
@@ -231,20 +231,16 @@ struct Shot : public Behaviour
 struct Zombie : public Behaviour
 {
 	float movementSpeed = 100.0f;
-	vec2 forcedVelocity = { 0.0f, 0.0f };
+
+	vec2 separation = { 0.0f,0.0f };
+
+	void start() override
+	{
+		gameObject->tag = (uint32)(Random.next() * UINT_MAX);
+	}
 
 	void update() override
 	{
-		float distance = length(gameObject->position);
-		if (distance < 200.0f)
-		{
-			forcedVelocity = normalize(gameObject->position)* (2-(distance/175.0f));
-		}
-		else
-		{
-			forcedVelocity = { 0.0f,0.0f };
-		}
-
 		float shortestDistance = 15000000.0f;
 		GameObject* closest = nullptr;
 		std::vector<GameObject*> players = getPlayers();
@@ -260,15 +256,22 @@ struct Zombie : public Behaviour
 				}
 			}
 		}
-
+		
+		vec2 direction = { 0.0f,0.0f };
 		if (closest != nullptr)
 		{
-			vec2 direction = closest->position - gameObject->position;
-			direction = normalize(direction) + forcedVelocity;
-			gameObject->position += direction*movementSpeed*Time.deltaTime;
-			gameObject->angle = degreesFromRadians(atan2(direction.y, direction.x)) + 90;
-			NetworkCommunication(UPDATE_POSITION, gameObject);
+			vec2 playerDirection = closest->position - gameObject->position;
+			direction += normalize(playerDirection);
+
 		}
+		if (separation.x != 0 || separation.y != 0) //To avoid NaN
+			separation = normalize(separation);
+
+		gameObject->position += (direction+separation) * movementSpeed * Time.deltaTime;
+		gameObject->angle = degreesFromRadians(atan2(direction.y, direction.x)) + 90;
+		NetworkCommunication(UPDATE_POSITION, gameObject);
+
+		separation = { 0.0f,0.0f };
 	}
 
 	void onCollisionTriggered(Collider &c1, Collider &c2) override
@@ -277,6 +280,10 @@ struct Zombie : public Behaviour
 		{
 			NetworkCommunication(DESTROY, c2.gameObject); // Destroy the bullet
 			GameObject* explosion = App->modNetServer->spawnExplosion(gameObject);
+		}
+		else if (c2.type == ColliderType::Zombie && c2.gameObject->tag != gameObject->tag)
+		{
+			separation += gameObject->position - c2.gameObject->position;
 		}
 	}
 };
