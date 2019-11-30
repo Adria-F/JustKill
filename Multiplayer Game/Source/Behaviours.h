@@ -61,11 +61,10 @@ struct Player : public Behaviour
 
 	int detectedPlayers = 0;
 
+	float spawnTime = 0.0f;
 	float immunityDuration = 5.0f;
-	float lastHit = 0.0f;
-
-	int initialHealth = 1;
-	int health = 0;
+	float blinkTime = 0.5f;
+	bool spawning = true;
 
 	GameObject* rez = nullptr;
 
@@ -75,7 +74,8 @@ struct Player : public Behaviour
 	void start() override
 	{
 		gameObject->tag = (uint32)(Random.next() * UINT_MAX);
-		health = initialHealth;
+		spawnTime = Time.time;
+		spawning = true;
 	}
 
 	void update() override
@@ -84,6 +84,20 @@ struct Player : public Behaviour
 		{
 			rez->animation->spriteDuration = (rezTime / (rez->animation->sprites.size()-1)) / detectedPlayers;
 			NetworkCommunication(UPDATE_ANIMATION, rez);
+		}
+		if (true)
+		{
+			if (Time.time - spawnTime >= immunityDuration)
+			{
+				spawning = false;
+				gameObject->color.a = 1.0f;
+				//NetworkCommunication(UPDATE_TEXTURE, gameObject);
+			}
+			else
+			{
+				gameObject->color.a = abs(sin((Time.time - spawnTime) / blinkTime * PI));
+				//NetworkCommunication(UPDATE_TEXTURE, gameObject);
+			}
 		}
 		if (isDown && detectedPlayers == 0)
 		{
@@ -103,7 +117,6 @@ struct Player : public Behaviour
 		{
 			isDown = false;
 			rezDuration = 0.0f;
-			health = initialHealth;
 			gameObject->texture = App->modResources->robot;
 			gameObject->size = { 43,49 };
 			gameObject->order = 3;
@@ -164,7 +177,7 @@ struct Player : public Behaviour
 			gameObject->angle = degreesFromRadians(atan2(mouse.y, mouse.x)) + 90;
 			NetworkCommunication(UPDATE_POSITION, gameObject);
 
-			if (isServer && mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
+			if (!spawning && isServer && mouse.buttons[0] == ButtonState::Pressed && Time.time - lastShotTime > shotingDelay)
 			{
 				lastShotTime = Time.time;
 
@@ -179,23 +192,13 @@ struct Player : public Behaviour
 	{
 		if (c2.type == ColliderType::Zombie && c2.gameObject->tag != gameObject->tag)
 		{
-			if (!isDown)
+			if (!isDown && !spawning)
 			{
-				if (Time.time - lastHit > immunityDuration)
-				{
-					lastHit = Time.time;
-					health--;
-
-					if (health <= 0)
-					{
-						health = 0;
-						isDown = true;
-						gameObject->texture = App->modResources->dead;
-						gameObject->size = { 66,85 };
-						gameObject->order = 1;
-						NetworkCommunication(UPDATE_TEXTURE, gameObject);
-					}
-				}
+				isDown = true;
+				gameObject->texture = App->modResources->dead;
+				gameObject->size = { 66,85 };
+				gameObject->order = 1;
+				NetworkCommunication(UPDATE_TEXTURE, gameObject);
 			}
 		}
 		if (c2.type == ColliderType::Player && c2.gameObject->tag != gameObject->tag)
@@ -203,7 +206,7 @@ struct Player : public Behaviour
 			if (isDown)
 			{
 				Player* ret = (Player*)c2.gameObject->behaviour;
-				if (!ret->isDown)
+				if (!ret->isDown && !ret->spawning)
 				{					
 					detectedPlayers++;
 					if (rez == nullptr)
