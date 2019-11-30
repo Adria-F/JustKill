@@ -58,7 +58,8 @@ void ModuleNetworkingServer::onGui()
 		ImGui::Separator();
 
 		ImGui::Text("ZombieSpawnRatio");
-		ImGui::InputFloat("Spawning Interval (s)", &zombieSpawnRatio, 0.1f, 10.0f);
+		ImGui::InputFloat("Initial Spawning Interval (s)", &initialZombieSpawnRatio, 0.1f, 10.0f);
+		ImGui::Text("Final Spawning Interval (s): %f", guiFinalZombieSpawnRatio);
 		ImGui::Checkbox("Enable Zombie Spawner", &isSpawnerEnabled);
 
 		ImGui::Separator();
@@ -113,6 +114,7 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				proxy = createClientProxy();
 
 				newClient = true;
+				connectedProxies++;
 
 				std::string playerName;
 				uint8 spaceshipType;
@@ -147,8 +149,6 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 					// TODO(jesus): Notify the new client proxy's replication manager about the creation of this game object
 					proxy->replicationManager.create(gameObject->networkId);
 				}
-
-				isPlayerConneted = true;
 
 				LOG("Message received: hello - from player %s", playerName.c_str());
 			}
@@ -274,6 +274,28 @@ void ModuleNetworkingServer::onUpdate()
 		//Zombie Spawner WiP
 		ZombieSpawner();
 
+		//Server Reset Game Objects when there are no proxies connected
+		uint16 networkGameObjectsCount;
+		GameObject *networkGameObjects[MAX_NETWORK_OBJECTS];
+		App->modLinkingContext->getNetworkGameObjects(networkGameObjects, &networkGameObjectsCount);
+		if (connectedProxies == 0 && networkGameObjectsCount > 0)
+		{
+			for (uint16 i = 0; i < networkGameObjectsCount; ++i)
+			{
+				GameObject *gameObject = networkGameObjects[i];
+
+				// Unregister the network identity
+				App->modLinkingContext->unregisterNetworkGameObject(gameObject);
+
+				// Remove its associated game object
+				Destroy(gameObject);
+
+			}
+		}
+
+
+
+		//Server Cam Control
 		if (Input.actionUp == ButtonState::Pressed)
 		{
 			App->modRender->cameraPosition.y -= 4.0;
@@ -319,6 +341,8 @@ void ModuleNetworkingServer::onConnectionReset(const sockaddr_in & fromAddress)
 
 		// Clear the client proxy
 		destroyClientProxy(proxy);
+
+		connectedProxies--;
 	}
 }
 
@@ -459,24 +483,28 @@ GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset
 
 void ModuleNetworkingServer::ZombieSpawner()
 {
-	if (isPlayerConneted && isSpawnerEnabled)
+	static float finalSpawnRatio = initialZombieSpawnRatio;
+	if (connectedProxies > 0 && isSpawnerEnabled)
 	{
 		float safetyRadius = 175.0f; //Area from the center where zombies cannot spawn
 		float maxDistance = 850.0f; //Max distance where the zombies can spawn
-		float increasingSpawnRatio = 0.5f;
-		static float finalSpawnRatio = 5.0f;
+		float increasingSpawnRatio = 0.01f;
+		float fixedTimeincreaseSpawnRatio = 0.1f; //Time to increasing spawn ratio
+		float maxFinalSpawnRatio = 1.0 / connectedProxies;		
 
 		timeSinceLastZombieSpawned += Time.deltaTime;
-		if (finalSpawnRatio > 1.0)
+		timeSinceLastIncreaseSpawnRatio += Time.deltaTime;
+
+		//Increase spawn rate each...
+		if (timeSinceLastIncreaseSpawnRatio > fixedTimeincreaseSpawnRatio && finalSpawnRatio >= maxFinalSpawnRatio)
 		{
-			finalSpawnRatio = zombieSpawnRatio - increasingSpawnRatio;
+			finalSpawnRatio = finalSpawnRatio - increasingSpawnRatio;
+			timeSinceLastIncreaseSpawnRatio = 0;
 		}
-		else
-		{
-			finalSpawnRatio = zombieSpawnRatio;
-		}
-		
-		if (timeSinceLastZombieSpawned > zombieSpawnRatio)
+
+
+
+		if (timeSinceLastZombieSpawned > finalSpawnRatio)
 		{
 
 			vec2 randomDirection = vec2{ RandomFloat(-1.0f,1.0f),RandomFloat(-1.0f,1.0f) };
@@ -484,9 +512,16 @@ void ModuleNetworkingServer::ZombieSpawner()
 
 			spawnZombie(normalize(randomDirection)*distance);
 			timeSinceLastZombieSpawned = 0.0f;
-			zombieSpawnRatio = finalSpawnRatio;
 		}
+		guiFinalZombieSpawnRatio = finalSpawnRatio;
 	}
+	else
+	{
+		guiFinalZombieSpawnRatio = initialZombieSpawnRatio;
+		finalSpawnRatio = initialZombieSpawnRatio;
+	}
+		
+
 
 }
 

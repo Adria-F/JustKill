@@ -32,9 +32,7 @@ private:
 
 	void onConnectionReset(const sockaddr_in &fromAddress) override;
 
-	void onDisconnect() override;
-
-
+	void onDisconnect() override;	
 
 	//////////////////////////////////////////////////////////////////////
 	// Client proxies
@@ -90,11 +88,15 @@ public:
 	GameObject* spawnZombie(vec2 position);
 	GameObject* spawnExplosion(GameObject* zombie);
 	GameObject* spawnBlood(vec2 position, float angle);
-	
-	float zombieSpawnRatio = 10.0;
+
+	float initialZombieSpawnRatio = 10.0;
+	float guiFinalZombieSpawnRatio = 0;
 	float timeSinceLastZombieSpawned = 0;
 	bool isSpawnerEnabled = true;
-	bool isPlayerConneted = false;
+	int connectedProxies = 0;
+
+	float timeSinceLastIncreaseSpawnRatio = 0;
+	bool hasZombies = false;
 
 	//Render Order
 	// Layer -1 - MAP
