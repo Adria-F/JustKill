@@ -14,10 +14,9 @@ void ModuleNetworkingClient::setServerAddress(const char * pServerAddress, uint1
 	serverPort = pServerPort;
 }
 
-void ModuleNetworkingClient::setPlayerInfo(const char * pPlayerName, uint8 pSpaceshipType)
+void ModuleNetworkingClient::setPlayerInfo(const char * pPlayerName)
 {
 	playerName = pPlayerName;
-	spaceshipType = pSpaceshipType;
 }
 
 GameObject * ModuleNetworkingClient::spawnLaser(GameObject * player)
@@ -99,7 +98,6 @@ void ModuleNetworkingClient::onGui()
 				ImGui::Separator();
 
 				ImGui::Text("Player info:");
-				ImGui::Text(" - Type: %u", spaceshipType);
 				ImGui::Text(" - Network id: %u", networkId);
 
 				vec2 playerPosition = {};
@@ -201,7 +199,6 @@ void ModuleNetworkingClient::onUpdate()
 		OutputMemoryStream stream;
 		stream << ClientMessage::Hello;
 		stream << playerName;
-		stream << spaceshipType;
 
 		sendPacket(stream, serverAddress);
 
