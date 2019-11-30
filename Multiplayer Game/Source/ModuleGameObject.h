@@ -47,7 +47,7 @@ struct GameObject
 	// Detect the player inside the client
 	bool isPlayer = false;
 
-	bool clientInstance = false; //To define that this will be an instance executed by the client code
+	uint32 clientInstanceNID = 0; //To define and identify that this will be an instance executed by the client code
 
 	// Interpolate object
 	bool doInterpolation = true;

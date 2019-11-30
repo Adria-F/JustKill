@@ -19,6 +19,11 @@ public:
 	// Replication Delay
 	float replicationPing = 0.0f;
 
+	//Game Statistics
+	uint32 zombieDeathCount = 0;
+	uint32 deadCount = 0;
+	uint32 alliesRevived = 0;
+
 private:
 
 	//////////////////////////////////////////////////////////////////////

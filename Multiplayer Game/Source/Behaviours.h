@@ -19,6 +19,7 @@ struct Behaviour
 	{
 		UPDATE_POSITION,
 		UPDATE_TEXTURE,
+		UPDATE_ALPHA,
 		UPDATE_ANIMATION,
 		DESTROY
 	};
@@ -37,6 +38,9 @@ void Behaviour::NetworkCommunication(networkMessageType type, GameObject* object
 			break;
 		case Behaviour::UPDATE_TEXTURE:
 			NetworkUpdate(object, ReplicationAction::Update_Texture);
+			break;
+		case Behaviour::UPDATE_ALPHA:
+			NetworkUpdate(object, ReplicationAction::Update_Alpha);
 			break;
 		case Behaviour::UPDATE_ANIMATION:
 			NetworkUpdate(object, ReplicationAction::Update_Animation);
@@ -85,18 +89,17 @@ struct Player : public Behaviour
 			rez->animation->spriteDuration = (rezTime / (rez->animation->sprites.size()-1)) / detectedPlayers;
 			NetworkCommunication(UPDATE_ANIMATION, rez);
 		}
-		if (true)
+		if (spawning)
 		{
 			if (Time.time - spawnTime >= immunityDuration)
 			{
 				spawning = false;
 				gameObject->color.a = 1.0f;
-				//NetworkCommunication(UPDATE_TEXTURE, gameObject);
+				NetworkCommunication(UPDATE_ALPHA, gameObject);
 			}
 			else
 			{
 				gameObject->color.a = abs(sin((Time.time - spawnTime) / blinkTime * PI));
-				//NetworkCommunication(UPDATE_TEXTURE, gameObject);
 			}
 		}
 		if (isDown && detectedPlayers == 0)
@@ -181,8 +184,8 @@ struct Player : public Behaviour
 			{
 				lastShotTime = Time.time;
 
-				GameObject* bullet = App->modNetServer->spawnBullet(gameObject, bullet_offset, !isServer);
-				bullet->clientInstance = true;
+				GameObject* bullet = App->modNetServer->spawnBullet(gameObject, bullet_offset);
+				bullet->clientInstanceNID = gameObject->networkId;
 				bullet->tag = gameObject->tag;
 			}
 		}
@@ -234,21 +237,6 @@ struct Bullet : public Behaviour
 
 		const float lifetimeSeconds = 2.0f;
 		if (secondsSinceCreation > lifetimeSeconds) NetworkCommunication(DESTROY, gameObject);
-	}
-};
-
-struct Shot : public Behaviour
-{
-	float aliveDuration = 0.1f;
-	float timeAlive = 0.0f;
-
-	void update() override
-	{
-		timeAlive += Time.deltaTime;
-		if (timeAlive >= aliveDuration)
-		{
-			NetworkCommunication(DESTROY, gameObject);
-		}
 	}
 };
 
@@ -344,7 +332,7 @@ struct Blood : public Behaviour
 		if (timeAlive >= aliveDuration)
 		{
 			gameObject->color.a = 1 - ((timeAlive - aliveDuration) / despawnTime);
-			NetworkCommunication(UPDATE_TEXTURE, gameObject);
+			NetworkCommunication(UPDATE_ALPHA, gameObject);
 			if (timeAlive >= aliveDuration + despawnTime)
 			{
 				NetworkCommunication(DESTROY, gameObject);

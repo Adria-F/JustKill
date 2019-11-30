@@ -7,6 +7,7 @@ enum class ReplicationAction
 	Create,
 	Update_Position,
 	Update_Texture,
+	Update_Alpha,
 	Update_Animation,
 	Destroy
 };

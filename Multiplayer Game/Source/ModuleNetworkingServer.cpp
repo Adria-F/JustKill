@@ -44,51 +44,54 @@ void ModuleNetworkingServer::onStart()
 
 void ModuleNetworkingServer::onGui()
 {
-	if (ImGui::CollapsingHeader("ModuleNetworkingServer", ImGuiTreeNodeFlags_DefaultOpen))
+	if (App->modUI->debugUI)
 	{
-		ImGui::Text("Connection checking info:");
-		ImGui::Text(" - Ping interval (s): %f", PING_INTERVAL_SECONDS);
-		ImGui::Text(" - Disconnection timeout (s): %f", DISCONNECT_TIMEOUT_SECONDS);
-
-		ImGui::Separator();
-
-		ImGui::Text("Replication");
-		ImGui::InputFloat("Delivery interval (s)", &replicationDeliveryIntervalSeconds, 0.01f, 0.1f);
-		
-		ImGui::Separator();
-
-		ImGui::Text("ZombieSpawnRatio");
-		ImGui::InputFloat("Initial Spawning Interval (s)", &initialZombieSpawnRatio, 0.1f, 10.0f);
-		ImGui::Text("Final Spawning Interval (s): %f", guiFinalZombieSpawnRatio);
-		ImGui::Checkbox("Enable Zombie Spawner", &isSpawnerEnabled);
-
-		ImGui::Separator();
-
-		if (state == ServerState::Listening)
+		if (ImGui::CollapsingHeader("ModuleNetworkingServer", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			int count = 0;
+			ImGui::Text("Connection checking info:");
+			ImGui::Text(" - Ping interval (s): %f", PING_INTERVAL_SECONDS);
+			ImGui::Text(" - Disconnection timeout (s): %f", DISCONNECT_TIMEOUT_SECONDS);
 
-			for (int i = 0; i < MAX_CLIENTS; ++i)
+			ImGui::Separator();
+
+			ImGui::Text("Replication");
+			ImGui::InputFloat("Delivery interval (s)", &replicationDeliveryIntervalSeconds, 0.01f, 0.1f);
+
+			ImGui::Separator();
+
+			ImGui::Text("ZombieSpawnRatio");
+			ImGui::InputFloat("Initial Spawning Interval (s)", &initialZombieSpawnRatio, 0.1f, 10.0f);
+			ImGui::Text("Final Spawning Interval (s): %f", guiFinalZombieSpawnRatio);
+			ImGui::Checkbox("Enable Zombie Spawner", &isSpawnerEnabled);
+
+			ImGui::Separator();
+
+			if (state == ServerState::Listening)
 			{
-				if (clientProxies[i].name != "")
-				{
-					ImGui::Text("CLIENT %d", count++);
-					ImGui::Text(" - address: %d.%d.%d.%d",
-						clientProxies[i].address.sin_addr.S_un.S_un_b.s_b1,
-						clientProxies[i].address.sin_addr.S_un.S_un_b.s_b2,
-						clientProxies[i].address.sin_addr.S_un.S_un_b.s_b3,
-						clientProxies[i].address.sin_addr.S_un.S_un_b.s_b4);
-					ImGui::Text(" - port: %d", ntohs(clientProxies[i].address.sin_port));
-					ImGui::Text(" - name: %s", clientProxies[i].name.c_str());
-					ImGui::Text(" - id: %d", clientProxies[i].clientId);
-					ImGui::Text(" - Last packet time: %.04f", clientProxies[i].lastPacketReceivedTime);
-					ImGui::Text(" - Seconds since repl.: %.04f", clientProxies[i].secondsSinceLastReplication);
-					
-					ImGui::Separator();
-				}
-			}
+				int count = 0;
 
-			ImGui::Checkbox("Render colliders", &App->modRender->mustRenderColliders);
+				for (int i = 0; i < MAX_CLIENTS; ++i)
+				{
+					if (clientProxies[i].name != "")
+					{
+						ImGui::Text("CLIENT %d", count++);
+						ImGui::Text(" - address: %d.%d.%d.%d",
+							clientProxies[i].address.sin_addr.S_un.S_un_b.s_b1,
+							clientProxies[i].address.sin_addr.S_un.S_un_b.s_b2,
+							clientProxies[i].address.sin_addr.S_un.S_un_b.s_b3,
+							clientProxies[i].address.sin_addr.S_un.S_un_b.s_b4);
+						ImGui::Text(" - port: %d", ntohs(clientProxies[i].address.sin_port));
+						ImGui::Text(" - name: %s", clientProxies[i].name.c_str());
+						ImGui::Text(" - id: %d", clientProxies[i].clientId);
+						ImGui::Text(" - Last packet time: %.04f", clientProxies[i].lastPacketReceivedTime);
+						ImGui::Text(" - Seconds since repl.: %.04f", clientProxies[i].secondsSinceLastReplication);
+
+						ImGui::Separator();
+					}
+				}
+
+				ImGui::Checkbox("Render colliders", &App->modRender->mustRenderColliders);
+			}
 		}
 	}
 }
@@ -423,6 +426,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	clientProxy.gameObject->order = 3;
 
 	clientProxy.gameObject->texture = App->modResources->robot;
+	clientProxy.gameObject->color.a = 0.75f;
 
 	// Create collider
 	clientProxy.gameObject->collider = App->modCollision->addCollider(ColliderType::Player, clientProxy.gameObject);
@@ -448,7 +452,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8
 	return clientProxy.gameObject;
 }
 
-GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset, bool clientInstance)
+GameObject * ModuleNetworkingServer::spawnBullet(GameObject *parent, vec2 offset)
 {
 	// Create a new game object with the player properties
 	GameObject *gameObject = Instantiate();

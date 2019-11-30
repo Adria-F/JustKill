@@ -22,6 +22,7 @@ public:
 	void setInputsEnabled(bool enabled);
 
 	bool isPlaying = false;
+	bool debugUI = true;
 
 	LRESULT HandleWindowsEvents(UINT msg, WPARAM wParam, LPARAM lParam);
 

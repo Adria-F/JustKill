@@ -77,7 +77,7 @@ void ModuleNetworkingClient::onGui()
 {
 	if (state == ClientState::Stopped) return;
 
-	if (App->modUI->isPlaying == false)
+	if (App->modUI->debugUI)
 	{
 		if (ImGui::CollapsingHeader("ModuleNetworkingClient", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -129,10 +129,19 @@ void ModuleNetworkingClient::onGui()
 			}
 		}
 	}
-	else
+	else if (App->modUI->isPlaying)
 	{
-		ImGui::Begin("Player Info");
-		ImGui::Text("Score: :)");
+		ImGui::Begin("Game Statistics (since login):");
+		ImGui::Text("Zombies killed: %d", zombieDeathCount);
+		ImGui::Text("Dead Count: %d", deadCount);
+		ImGui::Text("Allies revived: %d", alliesRevived);
+
+		ImGui::Separator();
+		ImGui::NewLine();
+		if (ImGui::Button("Logout"))
+			disconnect();
+
+		ImGui::End();
 	}
 
 }
@@ -302,6 +311,11 @@ void ModuleNetworkingClient::onDisconnect()
 	GameObject *networkGameObjects[MAX_NETWORK_OBJECTS] = {};
 	App->modLinkingContext->getNetworkGameObjects(networkGameObjects, &networkGameObjectsCount);
 	App->modLinkingContext->clear();
+
+	//Reset game statistics on logout
+	zombieDeathCount = 0;
+	deadCount = 0;
+	alliesRevived = 0;
 
 	// Destroy all network objects
 	for (uint32 i = 0; i < networkGameObjectsCount; ++i)

@@ -155,7 +155,7 @@ bool ModuleNetworking::gui()
 {
 	if (isConnected())
 	{
-		if (App->modNetServer->isEnabled() || !App->modUI->isPlaying)
+		if (App->modUI->debugUI)
 		{
 
 			ImGui::Begin("ModuleNetworking window");
@@ -207,14 +207,12 @@ bool ModuleNetworking::gui()
 
 	onGui();
 
-	if (App->modNetServer->isEnabled() || !App->modUI->isPlaying)
+	if (App->modUI->debugUI)
 	{
 
 		ImGui::PopItemWidth();
+		ImGui::End();
 	}
-
-	ImGui::End();
-
 
 	return true;
 }

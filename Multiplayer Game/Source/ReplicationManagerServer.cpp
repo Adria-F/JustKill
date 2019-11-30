@@ -51,7 +51,7 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 			packet << go->color.g;
 			packet << go->color.b;
 			packet << go->color.a;
-			packet << go->clientInstance;
+			packet << go->clientInstanceNID;
 
 			packet << (go->animation != nullptr); //Boolean to know if there is animation
 			if (go->animation)
@@ -79,11 +79,12 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 				packet << go->size.x;
 				packet << go->size.y;
 				packet << go->order;
-				packet << go->color.r;
-				packet << go->color.g;
-				packet << go->color.b;
-				packet << go->color.a;
 			}
+		}
+		else if ((*it_c).second == ReplicationAction::Update_Alpha)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it_c).first);
+			packet << go->color.a;
 		}
 		else if ((*it_c).second == ReplicationAction::Update_Animation)
 		{

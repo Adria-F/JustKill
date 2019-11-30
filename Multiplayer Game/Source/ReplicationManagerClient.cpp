@@ -38,19 +38,22 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 				go->doInterpolation = false;
 			}
 
-			packet >> go->clientInstance;
-			if (go->clientInstance) //It will be an instanced object on the client
+			packet >> go->clientInstanceNID;
+			if (go->clientInstanceNID != 0) //It will be an instanced object on the client
 			{
 				//Currently only for bullets
 				go->behaviour = new Bullet();
 				go->behaviour->gameObject = go;
 				go->behaviour->isServer = false;
 				go->doInterpolation = false;
-				GameObject* clientPlayer = App->modLinkingContext->getNetworkGameObject(clientNetworkId);
-				vec2 bullet_offset = { 10.0f, 20.0f };
-				vec2 forward = vec2FromDegrees(clientPlayer->angle);
-				vec2 right = { -forward.y, forward.x };
-				go->position = clientPlayer->position + forward * bullet_offset.y + right * bullet_offset.x;
+				GameObject* clientPlayer = App->modLinkingContext->getNetworkGameObject(go->clientInstanceNID);
+				if (clientPlayer)
+				{
+					vec2 bullet_offset = { 10.0f, 20.0f };
+					vec2 forward = vec2FromDegrees(clientPlayer->angle);
+					vec2 right = { -forward.y, forward.x };
+					go->position = clientPlayer->position + forward * bullet_offset.y + right * bullet_offset.x;
+				}
 			}
 
 			if (go->isPlayer)
@@ -100,9 +103,9 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			packet >> position.x;
 			packet >> position.y;
 			packet >> angle;
-			if (go != nullptr/* && !go->clientInstance*/)
+			if (go != nullptr)
 			{
-				if (go->clientInstance)
+				if (go->clientInstanceNID != 0)
 				{
 					go->doInterpolation = true;
 				}
@@ -126,18 +129,27 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			{
 				go->texture = App->modResources->playerDead;
 				((Player*)go->behaviour)->isDown = true;
+				App->modNetClient->deadCount++;
 			}
-			else if (go->isPlayer && UID == App->modResources->robot->UID)
+			else if (UID == App->modResources->robot->UID)
 			{
-				go->texture = App->modResources->playerRobot;
-				((Player*)go->behaviour)->isDown = false;
+				if (go->isPlayer)
+				{
+					go->texture = App->modResources->playerRobot;
+					((Player*)go->behaviour)->isDown = false;
+				}
+				else
+				{
+					App->modNetClient->alliesRevived++;
+				}
 			}
 			packet >> go->size.x;
 			packet >> go->size.y;
 			packet >> go->order;
-			packet >> go->color.r;
-			packet >> go->color.g;
-			packet >> go->color.b;
+		}
+		else if (action == ReplicationAction::Update_Alpha)
+		{
+			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 			packet >> go->color.a;
 		}
 		else if (action == ReplicationAction::Update_Animation)
@@ -154,6 +166,10 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 			if (go)
 			{
+				if (go->texture && go->texture->UID == App->modResources->zombie->UID) //If it is a zombie
+				{
+					App->modNetClient->zombieDeathCount++;
+				}
 				App->modLinkingContext->unregisterNetworkGameObject(go);
 				Destroy(go);
 			}
