@@ -8,7 +8,6 @@ public:
 	int serverPort;
 	const char *serverAddress = "127.0.0.1";
 	const char *playerName = "player";
-	uint8 spaceshipType = 0;
 
 private:
 

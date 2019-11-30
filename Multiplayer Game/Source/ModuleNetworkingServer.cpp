@@ -120,9 +120,7 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				connectedProxies++;
 
 				std::string playerName;
-				uint8 spaceshipType;
 				packet >> playerName;
-				packet >> spaceshipType;
 
 				proxy->address.sin_family = fromAddress.sin_family;
 				proxy->address.sin_addr.S_un.S_addr = fromAddress.sin_addr.S_un.S_addr;
@@ -132,7 +130,7 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				proxy->clientId = nextClientId++;
 
 				// Create new network object
-				spawnPlayer(*proxy, spaceshipType);
+				spawnPlayer(*proxy);
 
 				// Send welcome to the new player
 				OutputMemoryStream welcomePacket;
@@ -417,7 +415,7 @@ void ModuleNetworkingServer::destroyClientProxy(ClientProxy * proxy)
 // Spawning
 //////////////////////////////////////////////////////////////////////
 
-GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy, uint8 spaceshipType)
+GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy)
 {
 	// Create a new game object with the player properties
 	clientProxy.gameObject = Instantiate();

@@ -73,7 +73,7 @@ public:
 	// Spawning network objects
 	//////////////////////////////////////////////////////////////////////
 
-	GameObject * spawnPlayer(ClientProxy &clientProxy, uint8 spaceshipType);
+	GameObject * spawnPlayer(ClientProxy &clientProxy);
 
 	GameObject * spawnBullet(GameObject *parent, vec2 offset);
 

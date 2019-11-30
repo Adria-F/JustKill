@@ -150,7 +150,12 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 		else if (action == ReplicationAction::Update_Alpha)
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
-			packet >> go->color.a;
+			float alpha;
+			packet >> alpha;
+			if (go)
+			{
+				go->color.a = alpha;
+			}
 		}
 		else if (action == ReplicationAction::Update_Animation)
 		{
