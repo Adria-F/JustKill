@@ -89,7 +89,7 @@ public:
 	GameObject* spawnExplosion(GameObject* zombie);
 	GameObject* spawnBlood(vec2 position, float angle);
 
-	float initialZombieSpawnRatio = 10.0;
+	float initialZombieSpawnRatio = 5.0;
 	float guiFinalZombieSpawnRatio = 0;
 	float timeSinceLastZombieSpawned = 0;
 	bool isSpawnerEnabled = true;

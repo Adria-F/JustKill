@@ -242,7 +242,7 @@ struct Bullet : public Behaviour
 
 struct Zombie : public Behaviour
 {
-	float movementSpeed = 100.0f;
+	float movementSpeed = 75.0f;
 
 	vec2 separation = { 0.0f,0.0f };
 

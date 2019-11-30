@@ -494,7 +494,7 @@ void ModuleNetworkingServer::ZombieSpawner()
 		float maxDistance = 850.0f; //Max distance where the zombies can spawn
 		float increasingSpawnRatio = 0.01f;
 		float fixedTimeincreaseSpawnRatio = 0.1f; //Time to increasing spawn ratio
-		float maxFinalSpawnRatio = 1.0 / connectedProxies;		
+		float maxFinalSpawnRatio = 1.0 / (connectedProxies / 1.5f);		
 
 		timeSinceLastZombieSpawned += Time.deltaTime;
 		timeSinceLastIncreaseSpawnRatio += Time.deltaTime;
