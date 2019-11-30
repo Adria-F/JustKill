@@ -198,8 +198,8 @@ bool ModulePlatform::init()
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		1024, //CW_USEDEFAULT,
-		768, //CW_USEDEFAULT,
+		1400, //CW_USEDEFAULT,
+		1050, //CW_USEDEFAULT,
 		NULL,
 		NULL,
 		windowClass.hInstance,
@@ -271,6 +271,7 @@ bool ModulePlatform::init()
 	// Initial information
 	LOG("Press the <F1> key to toggle UI visibility.");
 	LOG("Keyboard/gamepad are mapped to the global Input object.");
+	LOG("You can revive your partner by standing on top of him!");
 	LOG("Keyboard mappings are : ");
 	LOG(" - A, S, D, W: Directional pad.");
 	LOG(" - Q, E: Left and right shoulder buttons.");

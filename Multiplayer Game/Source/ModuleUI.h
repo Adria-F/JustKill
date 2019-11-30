@@ -21,7 +21,7 @@ public:
 
 	void setInputsEnabled(bool enabled);
 
-	bool isPlaying = false;
+	bool isPlaying = true;
 
 	LRESULT HandleWindowsEvents(UINT msg, WPARAM wParam, LPARAM lParam);
 

@@ -211,10 +211,8 @@ bool ModuleNetworking::gui()
 	{
 
 		ImGui::PopItemWidth();
+		ImGui::End();
 	}
-
-	ImGui::End();
-
 
 	return true;
 }

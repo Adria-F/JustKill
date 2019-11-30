@@ -36,32 +36,35 @@ bool ModuleUI::preUpdate()
 
 bool ModuleUI::gui()
 {
-	ImGui::Begin("Log");
-
-	uint32 logEntryCount = getLogEntryCount();
-	for (uint32 entryIndex = 0; entryIndex < logEntryCount; ++entryIndex)
+	if (!isPlaying)
 	{
-		LogEntry entry = getLogEntry(entryIndex);
-		if (entry.type == LOG_TYPE_WARN) {
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
-		}
-		else if (entry.type == LOG_TYPE_ERROR) {
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
-		}
-		else if (entry.type == LOG_TYPE_DEBUG) {
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.3f, 1.0f, 1.0f));
-		}
-		ImGui::TextWrapped("%.4f:\t%s", entry.time, entry.message);
-		if (entry.type == LOG_TYPE_WARN ||
-			entry.type == LOG_TYPE_ERROR ||
-			entry.type == LOG_TYPE_DEBUG)
-		{
-			ImGui::PopStyleColor();
-		}
-	}
-	ImGui::SetScrollHere();
+		ImGui::Begin("Log");
 
-	ImGui::End();
+		uint32 logEntryCount = getLogEntryCount();
+		for (uint32 entryIndex = 0; entryIndex < logEntryCount; ++entryIndex)
+		{
+			LogEntry entry = getLogEntry(entryIndex);
+			if (entry.type == LOG_TYPE_WARN) {
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+			}
+			else if (entry.type == LOG_TYPE_ERROR) {
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+			}
+			else if (entry.type == LOG_TYPE_DEBUG) {
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.3f, 1.0f, 1.0f));
+			}
+			ImGui::TextWrapped("%.4f:\t%s", entry.time, entry.message);
+			if (entry.type == LOG_TYPE_WARN ||
+				entry.type == LOG_TYPE_ERROR ||
+				entry.type == LOG_TYPE_DEBUG)
+			{
+				ImGui::PopStyleColor();
+			}
+		}
+		ImGui::SetScrollHere();
+
+		ImGui::End();
+	}
 
 	return true;
 }

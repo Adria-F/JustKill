@@ -129,12 +129,6 @@ void ModuleNetworkingClient::onGui()
 			}
 		}
 	}
-	else
-	{
-		ImGui::Begin("Player Info");
-		ImGui::Text("Score: :)");
-	}
-
 }
 
 void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, const sockaddr_in &fromAddress)
