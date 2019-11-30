@@ -25,19 +25,6 @@ uint16 packInputControllerButtons(const InputController & input)
 	return buttonBits;
 }
 
-InputController inputControllerFromInputPacketData(const InputPacketData & inputPacketData, const InputController & previousGamepad)
-{
-
-	InputController currentInput;	
-	currentInput.horizontalAxis = inputPacketData.horizontalAxis;
-	currentInput.verticalAxis = inputPacketData.verticalAxis;
-	unpackInputControllerButtons(inputPacketData.buttonBits, currentInput);
-	
-	
-
-	return currentInput;
-}
-
 void unpackInputControllerButtons(uint16 buttonBits, InputController & input)
 {
 	// NOTE(jesus): This table contains the ButtonState depending on the pressed state (true or false) of a button
