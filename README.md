@@ -1,20 +1,58 @@
-# JustKill
-It's a top-down 2d shooter
+# Just Kill
 
-The documentation will be presented in a markdown or text file (README.md
-or README.txt) provided in the root folder of the release. It will contain the
-following information:
+It's a top-down survival zombie shooter game. You need to survive for as long as possible with your friends.
+Tests has been done with 4 players but the game can theoretically handle more.
 
-● Names of the group members
+## Authors
+* **Adrià Ferrer** - [Adria-F](https://github.com/Adria-F)
+* **Josep Pi** - [joseppi](https://github.com/joseppi)
 
-● Game name and description
+## Getting Started
+- You can revive a fallen ally by staying close to them.
+- W,A,S,D for moving your player.
+- Left Mouse Button shoot.
+- F1 to toggle between Network UI and GUI
 
-● Gameplay tutorial
+## Features
+### Adria
+- Entity Interpolation
+	- Fixed Bug: Then a player died the interpolation did not stop
+- Reduncancy
+- Client Side Prediction 
+	- Behaveour Implementation
+- Pathfinding
+	- Separation
+- Revive player
+	- Multiple player reviving time 
+	- Fixed Bug: Players could not revive faster whentere where more than one
+- Player Names
+	- Names of each player are displayed on the top of their Game Object.
+	- Can't have two players with the same name.
+- Client Laser
+- Invincibility on spawn
+- Release
 
-● List of implemented features and authors of each one
+### Josep
+- Delegate
+- Client Side Prediction
+- Zombie Spawner
+	- Added Increasing Zombie Spawning Ratio
+	- Zombie Spawner based on conected proxies
+	- Server and spawner resets when no proxies connected on the server 
+- Fix revive bug 
+- Server clears GameObject list when there are no proxies connected.
+- Update Colliders Module to the last version
+- Map
+- Collision of the map
+- Improved ImGui debug GUI
+	- You can see what packets are begin dropped
+- Readme
 
-○ In groups of several people, it is expected that everybody
-implements at least one of the techniques explained in the lab
-sessions.
+### Both
+- Delivery Manager
+	- Fixed Bug: Made sure packet drops did not cause any problems and Debuged. (Josep)
+- Server Replication
+- Server Reconciliation
 
-● List of known bugs and issues
+## Known Bugs
+- Sometimes when you spawn and there are a lot of zombies on the player spawn zone, it can create some issues.
