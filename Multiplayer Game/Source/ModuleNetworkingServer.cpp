@@ -511,7 +511,7 @@ void ModuleNetworkingServer::ZombieSpawner()
 		{
 
 			vec2 randomDirection = vec2{ RandomFloat(-1.0f,1.0f),RandomFloat(-1.0f,1.0f) };
-			float distance = 1200.0f;
+			float distance = 1800.0f;
 
 			spawnZombie(normalize(randomDirection)*distance);
 			timeSinceLastZombieSpawned = 0.0f;
