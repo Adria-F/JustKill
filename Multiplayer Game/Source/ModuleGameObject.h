@@ -44,6 +44,9 @@ struct GameObject
 	// Tag for custom usage
 	uint32 tag = 0;
 
+	// Name for players
+	std::string name = "";
+
 	// Detect the player inside the client
 	bool isPlayer = false;
 

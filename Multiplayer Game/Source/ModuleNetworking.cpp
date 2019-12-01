@@ -214,6 +214,8 @@ bool ModuleNetworking::gui()
 		ImGui::End();
 	}
 
+	floatingUI();
+
 	return true;
 }
 

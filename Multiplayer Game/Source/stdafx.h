@@ -28,6 +28,7 @@
 #include <map>
 #include <list>
 #include <deque>
+#include <string>
 #include <algorithm>
 
 #include <stdio.h>

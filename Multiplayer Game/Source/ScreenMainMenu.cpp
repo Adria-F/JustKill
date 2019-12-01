@@ -44,7 +44,7 @@ void ScreenMainMenu::gui()
 	static int remoteServerPort = 8888;
 	ImGui::InputInt("Server port", &remoteServerPort);
 
-	static char playerNameStr[64] = "Starcraft II";
+	static char playerNameStr[64] = "Player";
 	ImGui::InputText("Player name", playerNameStr, sizeof(playerNameStr));
 
 	static bool showInvalidUserName = false;

@@ -32,6 +32,7 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 			packet >> go->color.g;
 			packet >> go->color.b;
 			packet >> go->color.a;
+			packet >> go->name;
 			if (networkId == clientNetworkId)
 			{
 				go->isPlayer = true;
@@ -91,8 +92,12 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 				else
 				{
 					go->texture = App->modTextures->getTexturebyUID(UID);
+					if (UID == App->modResources->robot->UID)
+					{
+						App->modNetClient->players.push_back(go);
+					}
 				}
-			}
+			}			
 		}
 		else if (action == ReplicationAction::Update_Position)
 		{
@@ -174,6 +179,10 @@ void ReplicationManagerClient::read(const InputMemoryStream & packet, uint32 cli
 				if (go->texture && go->texture->UID == App->modResources->zombie->UID) //If it is a zombie
 				{
 					App->modNetClient->zombieDeathCount++;
+				}
+				else if (go->texture && go->texture->UID == App->modResources->robot->UID) //If it is a player
+				{
+					App->modNetClient->players.remove(go);
 				}
 				App->modLinkingContext->unregisterNetworkGameObject(go);
 				Destroy(go);

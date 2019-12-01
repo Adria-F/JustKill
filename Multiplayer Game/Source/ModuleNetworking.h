@@ -16,7 +16,6 @@ public:
 
 	float GetSimulatedLatency();
 
-
 protected:
 
 	//////////////////////////////////////////////////////////////////////
@@ -80,7 +79,7 @@ private:
 
 	virtual void onDisconnect() = 0;
 
-
+	virtual void floatingUI() {};
 
 private:
 

@@ -309,6 +309,8 @@ void ModuleNetworkingClient::onDisconnect()
 	App->modLinkingContext->getNetworkGameObjects(networkGameObjects, &networkGameObjectsCount);
 	App->modLinkingContext->clear();
 
+	players.clear();
+
 	//Reset game statistics on logout
 	zombieDeathCount = 0;
 	deadCount = 0;
@@ -321,6 +323,27 @@ void ModuleNetworkingClient::onDisconnect()
 	}
 
 	App->modRender->cameraPosition = {};
+}
+
+void ModuleNetworkingClient::floatingUI()
+{
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0,0,0,0.3f });
+	GameObject* clientPlayer = App->modLinkingContext->getNetworkGameObject(networkId);
+	if (clientPlayer)
+	{
+		int count = 0;
+		for (std::list<GameObject*>::iterator it = players.begin(); it != players.end(); ++it)
+		{
+			ImVec2 textSize = ImGui::CalcTextSize((*it)->name.c_str());
+			ImGui::SetNextWindowPos({ (*it)->position.x + Window.width / 2 - clientPlayer->position.x - textSize.x / 2 - 7,(*it)->position.y + Window.height / 2 - clientPlayer->position.y - textSize.y - 30 });
+			ImGui::Begin(std::to_string(count).c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus);
+			ImGui::Text((*it)->name.c_str());
+			ImGui::End();
+
+			count++;
+		}
+	}
+	ImGui::PopStyleColor(1);
 }
 
 void ModuleNetworkingClient::processAllInputs()

@@ -51,6 +51,7 @@ bool ReplicationManagerServer::write(OutputMemoryStream & packet)
 			packet << go->color.g;
 			packet << go->color.b;
 			packet << go->color.a;
+			packet << go->name;
 			packet << go->clientInstanceNID;
 
 			packet << (go->animation != nullptr); //Boolean to know if there is animation

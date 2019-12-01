@@ -19,6 +19,8 @@ public:
 	// Replication Delay
 	float replicationPing = 0.0f;
 
+	std::list<GameObject*> players;
+
 	//Game Statistics
 	uint32 zombieDeathCount = 0;
 	uint32 deadCount = 0;
@@ -43,6 +45,8 @@ private:
 	void onConnectionReset(const sockaddr_in &fromAddress) override;
 
 	void onDisconnect() override;
+
+	void floatingUI() override;
 
 	void processAllInputs();
 

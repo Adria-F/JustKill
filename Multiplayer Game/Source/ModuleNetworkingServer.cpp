@@ -425,6 +425,7 @@ GameObject * ModuleNetworkingServer::spawnPlayer(ClientProxy &clientProxy)
 
 	clientProxy.gameObject->texture = App->modResources->robot;
 	clientProxy.gameObject->color.a = 0.75f;
+	clientProxy.gameObject->name = clientProxy.name;
 
 	// Create collider
 	clientProxy.gameObject->collider = App->modCollision->addCollider(ColliderType::Player, clientProxy.gameObject);
