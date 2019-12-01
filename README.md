@@ -14,17 +14,17 @@ Tests has been done with 4 players but the game can theoretically handle more.
 - F1 to toggle between Network UI and GUI
 
 ## Features
-### Adria
+### Adrià Ferrer
 - **Entity Interpolation**
 	- Fixed Bug: Then a player died the interpolation did not stop
-- **Reduncancy**
+- **Redundancy**
 - Client Side Prediction 
 	- Behaveour Implementation
-- Pathfinding
+- Path finding
 	- Separation
 - Revive player
 	- Multiple player reviving time 
-	- Fixed Bug: Players could not revive faster whentere where more than one
+	- Fixed Bug: Players could not revive faster when there where more than one
 - Player Names
 	- Names of each player are displayed on the top of their Game Object.
 	- Can't have two players with the same name.
@@ -32,12 +32,12 @@ Tests has been done with 4 players but the game can theoretically handle more.
 - Invincibility on spawn
 - Release
 
-### Josep
+### Josep Pi
 - **Client Side Prediction**
 - Delegate
 - Zombie Spawner
 	- Added Increasing Zombie Spawning Ratio
-	- Zombie Spawner based on conected proxies
+	- Zombie Spawner based on connected proxies
 	- Server and spawner resets when no proxies connected on the server 
 - Fix revive bug 
 - Server clears GameObject list when there are no proxies connected.
@@ -47,7 +47,7 @@ Tests has been done with 4 players but the game can theoretically handle more.
 - Improved ImGui debug GUI
 	- You can see what packets are begin dropped
 	- Log jumps to the last event automatically
-- Readme
+- ReadMe
 
 ### Both
 - **Server Replication**
