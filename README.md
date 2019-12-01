@@ -15,9 +15,9 @@ Tests has been done with 4 players but the game can theoretically handle more.
 
 ## Features
 ### Adria
-- Entity Interpolation
+- **Entity Interpolation**
 	- Fixed Bug: Then a player died the interpolation did not stop
-- Reduncancy
+- **Reduncancy**
 - Client Side Prediction 
 	- Behaveour Implementation
 - Pathfinding
@@ -33,8 +33,8 @@ Tests has been done with 4 players but the game can theoretically handle more.
 - Release
 
 ### Josep
+- **Client Side Prediction**
 - Delegate
-- Client Side Prediction
 - Zombie Spawner
 	- Added Increasing Zombie Spawning Ratio
 	- Zombie Spawner based on conected proxies
@@ -46,13 +46,14 @@ Tests has been done with 4 players but the game can theoretically handle more.
 - Collision of the map
 - Improved ImGui debug GUI
 	- You can see what packets are begin dropped
+	- Log jumps to the last event automatically
 - Readme
 
 ### Both
-- Delivery Manager
+- **Server Replication**
+- **Delivery Manager**
 	- Fixed Bug: Made sure packet drops did not cause any problems and Debuged. (Josep)
-- Server Replication
-- Server Reconciliation
+- **Server Reconciliation**
 
 ## Known Bugs
 - Sometimes when you spawn and there are a lot of zombies on the player spawn zone, it can create some issues.
