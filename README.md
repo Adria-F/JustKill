@@ -52,7 +52,7 @@ Tests has been done with 4 players but the game can theoretically handle more.
 ### Both
 - **Server Replication**
 - **Delivery Manager**
-	- Fixed Bug: Made sure packet drops did not cause any problems and Debuged. (Josep)
+	- Fixed Bug: Made sure packet drops did not cause any sync problems. (Josep)
 - **Server Reconciliation**
 
 ## Known Bugs
