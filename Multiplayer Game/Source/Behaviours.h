@@ -84,9 +84,12 @@ struct Player : public Behaviour
 
 	void update() override
 	{
+		float reviveSpeed = 1.0f;
+		if (detectedPlayers > 0)
+			reviveSpeed = 0.5f + detectedPlayers*0.5f;
 		if (rez != nullptr)
 		{
-			rez->animation->spriteDuration = (rezTime / (rez->animation->sprites.size()-1)) / detectedPlayers;
+			rez->animation->spriteDuration = (rezTime / (rez->animation->sprites.size()-1)) / reviveSpeed;
 			NetworkCommunication(UPDATE_ANIMATION, rez);
 		}
 		if (spawning)
@@ -113,7 +116,7 @@ struct Player : public Behaviour
 		}
 		if (detectedPlayers > 0)
 		{
-			rezDuration += Time.deltaTime;
+			rezDuration += Time.deltaTime*reviveSpeed;
 		}
 		detectedPlayers = 0;
 		if (isDown && rezDuration > rezTime)

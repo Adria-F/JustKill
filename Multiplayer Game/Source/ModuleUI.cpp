@@ -36,7 +36,7 @@ bool ModuleUI::preUpdate()
 
 bool ModuleUI::gui()
 {
-	if (debugUI)
+	if (!isPlaying || debugUI)
 	{
 		ImGui::Begin("Log");
 

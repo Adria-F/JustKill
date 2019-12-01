@@ -114,44 +114,68 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 
 			if (proxy == nullptr)
 			{
-				proxy = createClientProxy();
-
 				newClient = true;
-				connectedProxies++;
 
 				std::string playerName;
 				packet >> playerName;
 
-				proxy->address.sin_family = fromAddress.sin_family;
-				proxy->address.sin_addr.S_un.S_addr = fromAddress.sin_addr.S_un.S_addr;
-				proxy->address.sin_port = fromAddress.sin_port;
-				proxy->connected = true;
-				proxy->name = playerName;
-				proxy->clientId = nextClientId++;
-
-				// Create new network object
-				spawnPlayer(*proxy);
-
-				// Send welcome to the new player
-				OutputMemoryStream welcomePacket;
-				welcomePacket << ServerMessage::Welcome;
-				welcomePacket << proxy->clientId;
-				welcomePacket << proxy->gameObject->networkId;
-				sendPacket(welcomePacket, fromAddress);
-
-				// Send all network objects to the new player
-				uint16 networkGameObjectsCount;
-				GameObject *networkGameObjects[MAX_NETWORK_OBJECTS];
-				App->modLinkingContext->getNetworkGameObjects(networkGameObjects, &networkGameObjectsCount);
-				for (uint16 i = 0; i < networkGameObjectsCount; ++i)
+				bool usedName = false;
+				for (int i = 0; i < MAX_CLIENTS; ++i)
 				{
-					GameObject *gameObject = networkGameObjects[i];
-
-					// TODO(jesus): Notify the new client proxy's replication manager about the creation of this game object
-					proxy->replicationManager.create(gameObject->networkId);
+					if (clientProxies[i].name == playerName)
+					{
+						usedName = true;
+						break;
+					}
 				}
 
-				LOG("Message received: hello - from player %s", playerName.c_str());
+				if (usedName)
+				{
+					OutputMemoryStream unwelcomePacket;
+					unwelcomePacket << ServerMessage::Unwelcome;
+					std::string errorMsg = "Player Name already in use";
+					unwelcomePacket << errorMsg;
+					sendPacket(unwelcomePacket, fromAddress);
+
+					WLOG("Message received: UNWELCOMED hello - from player %s", playerName.c_str());
+				}
+				else
+				{
+					proxy = createClientProxy();
+
+					connectedProxies++;
+
+					proxy->address.sin_family = fromAddress.sin_family;
+					proxy->address.sin_addr.S_un.S_addr = fromAddress.sin_addr.S_un.S_addr;
+					proxy->address.sin_port = fromAddress.sin_port;
+					proxy->connected = true;
+					proxy->name = playerName;
+					proxy->clientId = nextClientId++;
+
+					// Create new network object
+					spawnPlayer(*proxy);
+
+					// Send welcome to the new player
+					OutputMemoryStream welcomePacket;
+					welcomePacket << ServerMessage::Welcome;
+					welcomePacket << proxy->clientId;
+					welcomePacket << proxy->gameObject->networkId;
+					sendPacket(welcomePacket, fromAddress);
+
+					// Send all network objects to the new player
+					uint16 networkGameObjectsCount;
+					GameObject *networkGameObjects[MAX_NETWORK_OBJECTS];
+					App->modLinkingContext->getNetworkGameObjects(networkGameObjects, &networkGameObjectsCount);
+					for (uint16 i = 0; i < networkGameObjectsCount; ++i)
+					{
+						GameObject *gameObject = networkGameObjects[i];
+
+						// TODO(jesus): Notify the new client proxy's replication manager about the creation of this game object
+						proxy->replicationManager.create(gameObject->networkId);
+					}
+
+					LOG("Message received: hello - from player %s", playerName.c_str());
+				}
 			}
 
 			if (!newClient)
@@ -159,6 +183,8 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				// Send welcome to the new player
 				OutputMemoryStream unwelcomePacket;
 				unwelcomePacket << ServerMessage::Unwelcome;
+				std::string errorMsg = "Client address already connected";
+				unwelcomePacket << errorMsg;
 				sendPacket(unwelcomePacket, fromAddress);
 
 				WLOG("Message received: UNWELCOMED hello - from player %s", proxy->name.c_str());

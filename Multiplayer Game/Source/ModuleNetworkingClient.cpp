@@ -65,6 +65,9 @@ void ModuleNetworkingClient::onStart()
 	inputDataFront = 0;
 	inputDataBack = 0;
 
+	App->modUI->isPlaying = true;
+	App->modUI->debugUI = false;
+
 	secondsSinceLastInputDelivery = 0.0f;
 	secondsSinceLastPing = 0.0f;
 	lastPacketReceivedTime = Time.time;
@@ -162,6 +165,9 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 		else if (message == ServerMessage::Unwelcome)
 		{
 			WLOG("ModuleNetworkingClient::onPacketReceived() - Unwelcome from server :-(");
+			std::string errorMsg;
+			packet >> errorMsg;
+			WLOG("Server says: %s", errorMsg.c_str());
 			disconnect();
 		}
 	}
@@ -310,6 +316,8 @@ void ModuleNetworkingClient::onDisconnect()
 	App->modLinkingContext->clear();
 
 	players.clear();
+	App->modUI->isPlaying = false;
+	App->modUI->debugUI = true;
 
 	//Reset game statistics on logout
 	zombieDeathCount = 0;
