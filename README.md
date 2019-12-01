@@ -34,7 +34,7 @@ Tests has been done with 4 players but the game can theoretically handle more.
 
 ### Josep Pi
 - **Client Side Prediction**
-- Delegate
+- **Delegate**
 - Zombie Spawner
 	- Added Increasing Zombie Spawning Ratio
 	- Zombie Spawner based on connected proxies
