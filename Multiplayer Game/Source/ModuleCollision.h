@@ -9,8 +9,8 @@ struct Collider
 
 struct CollisionData
 {
-	Collider *collider;   // The collider component itself
-	Behaviour *behaviour; // The callbacks
+	Collider *collider = nullptr;   // The collider component itself
+	Behaviour *behaviour = nullptr; // The callbacks
 	vec2 p1, p2, p3, p4;  // Transformed bounding box points
 };
 

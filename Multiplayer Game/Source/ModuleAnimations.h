@@ -5,7 +5,7 @@ struct Texture;
 struct Animation
 {
 public:
-	std::string tag;
+	std::string tag = "";
 	float spriteDuration = 0.5f;
 	std::vector<Texture**> sprites;
 	bool loop = false;

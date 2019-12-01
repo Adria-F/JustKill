@@ -44,8 +44,8 @@ private:
 	{
 		bool connected = false;
 		sockaddr_in address;
-		uint32 clientId;
-		std::string name;
+		uint32 clientId = 0;
+		std::string name = "";
 		GameObject *gameObject = nullptr;
 		double lastPacketReceivedTime = 0.0f;
 		float secondsSinceLastReplication = 0.0f;

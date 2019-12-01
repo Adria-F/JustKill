@@ -64,7 +64,7 @@ private:
 
 	ClientState state = ClientState::Stopped;
 
-	std::string serverAddressStr;
+	std::string serverAddressStr = "";
 	uint16 serverPort = 0;
 
 	sockaddr_in serverAddress = {};
