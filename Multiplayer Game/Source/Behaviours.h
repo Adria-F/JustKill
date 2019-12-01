@@ -148,20 +148,20 @@ struct Player : public Behaviour
 			if (input.horizontalAxis != 0.0f || input.verticalAxis != 0.0f)
 			{
 				const float advanceSpeed = 200.0f;
-				if (gameObject->position.x < 875 && input.horizontalAxis > 0.0f) /*Limit on the east*/					
+				if (gameObject->position.x < 905 && input.horizontalAxis > 0.0f) /*Limit on the east*/
 				{					
 					gameObject->position += vec2{ 1,0 } *input.horizontalAxis * advanceSpeed * Time.deltaTime;
 				}
-				else if (gameObject->position.x > -800 && input.horizontalAxis < 0.0f)/*Limit on the west*/
+				else if (gameObject->position.x > -900 && input.horizontalAxis < 0.0f)/*Limit on the west*/
 				{
 					gameObject->position += vec2{ 1,0 } *input.horizontalAxis * advanceSpeed * Time.deltaTime;
 				}
 
-				if (gameObject->position.y > -925 && input.verticalAxis > 0.0f) /*Limit on the north*/	
+				if (gameObject->position.y > -1015 && input.verticalAxis > 0.0f) /*Limit on the north*/	
 				{
 					gameObject->position += vec2{ 0,-1 } *input.verticalAxis * advanceSpeed * Time.deltaTime;
 				}
-				else if (gameObject->position.y < 925 && input.verticalAxis < 0.0f) /*Limit on the south*/
+				else if (gameObject->position.y < 1005 && input.verticalAxis < 0.0f) /*Limit on the south*/
 				{
 					gameObject->position += vec2{ 0,-1 } *input.verticalAxis * advanceSpeed * Time.deltaTime;
 				}
