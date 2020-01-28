@@ -9,6 +9,7 @@ Tests have been done with 4 players but the game can theoretically handle more.
 
 ## The Game
 <img src="https://imgur.com/a/2aeqypG">
+<blockquote class="imgur-embed-pub" lang="en" data-id="a/2aeqypG" data-context="false"><a href="//imgur.com/a/2aeqypG">JustKill Screenshot</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
 
 ## Getting Started
 - You can revive a fallen ally by staying close to them.
