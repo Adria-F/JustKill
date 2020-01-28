@@ -2,13 +2,11 @@
 
 It's a top-down survival zombie shooter multiplayer game. You need to survive for as long as possible with your friends.
 Tests have been done with 4 players but the game can theoretically handle more.
+<img src="https://i.imgur.com/2nGKVkR.png">
 
 ## Authors
 * **Adrià Ferrer** - [GitHub page](https://github.com/Adria-F)
 * **Josep Pi** - [GitHub page](https://github.com/joseppi)
-
-## The Game
-<img src="https://i.imgur.com/2nGKVkR.png">
 
 ## Getting Started
 - You can revive a fallen ally by staying close to them.
