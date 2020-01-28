@@ -7,6 +7,9 @@ Tests have been done with 4 players but the game can theoretically handle more.
 * **Adrià Ferrer** - [GitHub page](https://github.com/Adria-F)
 * **Josep Pi** - [GitHub page](https://github.com/joseppi)
 
+## The Game
+<img src="https://imgur.com/a/2aeqypG">
+
 ## Getting Started
 - You can revive a fallen ally by staying close to them.
 - W,A,S,D for moving your player.
