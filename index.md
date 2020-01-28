@@ -1,11 +1,11 @@
 # Just Kill
 
-It's a top-down survival zombie shooter game. You need to survive for as long as possible with your friends.
+It's a top-down survival zombie shooter multiplayer game. You need to survive for as long as possible with your friends.
 Tests have been done with 4 players but the game can theoretically handle more.
 
 ## Authors
-* **Adrià Ferrer** - [Adria-F](https://github.com/Adria-F)
-* **Josep Pi** - [joseppi](https://github.com/joseppi)
+* **Adrià Ferrer** - [GitHub page](https://github.com/Adria-F)
+* **Josep Pi** - [GitHub page](https://github.com/joseppi)
 
 ## Getting Started
 - You can revive a fallen ally by staying close to them.
@@ -16,12 +16,12 @@ Tests have been done with 4 players but the game can theoretically handle more.
 - Shot at zombies to kill them.
 - You and the zombies have 1 HP.
 
-## Features
+## Features Implementation
 ### Adrià Ferrer
 - **Entity Interpolation**
 	- Fixed Bug: When a player died the interpolation did not stop
 - **Input Redundancy**
-- Client Side Prediction 
+- **Client Side Prediction** 
 	- Behaviour Implementation
 	- Bullet client instancing and server sync
 - Animation Module
@@ -34,7 +34,7 @@ Tests have been done with 4 players but the game can theoretically handle more.
 	- Multiple player reviving time 
 	- Fixed Bug: Players could not revive faster when there where more than one
 - Player Names
-	- Names of each player are displayed on the top of their Game Object.
+	- Names of each player are displayed on top of their sprites.
 	- Can't have two players with the same name.
 - In game statistics
 	- Zombies killed count
